@@ -119,7 +119,8 @@
     "transcribing": "{name} has no text layer: transcribing it with OCR…",
     "finishing": "Preparing the fact list…",
     "working": "Reading the documents…",
-    "held": "Exhibits received: I’ll number them as soon as your client’s role is confirmed."
+    "held": "Exhibits received: I’ll number them as soon as your client’s role is confirmed.",
+    "dropHere": "Drop your exhibits here (PDF, DOCX, TXT)"
   },
   "facts": {
     "title": "Facts",

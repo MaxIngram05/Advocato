@@ -100,9 +100,14 @@ fieldset { border: 0; margin: 0 0 8px; padding: 0; }
 }
 .av-composer:focus-within { border-color: var(--av-highlight); }
 .av-composer textarea { flex: 1; border: 0; outline: none; resize: none; background: transparent; color: var(--av-ink); padding: 7px 4px; max-height: 120px; line-height: 1.4; }
-.av-icon-btn { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; font-size: 17px; color: var(--av-muted); flex: none; }
+.av-icon-btn { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--av-bg); flex: none; display: inline-flex; align-items: center; justify-content: center; }
 .av-icon-btn:hover { background: #EEF4E2; }
-.av-send { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--av-bg); color: var(--av-text); font-size: 16px; font-weight: 700; flex: none; }
+.av-send { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--av-bg); color: var(--av-text); flex: none; display: inline-flex; align-items: center; justify-content: center; }
+.av-app { position: relative; }
+.av-drop {
+  position: absolute; inset: 8px; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  border: 2px dashed var(--av-bg); border-radius: 16px; background: rgba(246, 244, 236, 0.94); color: var(--av-bg); font-weight: 600; pointer-events: none;
+}
 .av-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
 /* Settings gear */

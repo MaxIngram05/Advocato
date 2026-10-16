@@ -68,6 +68,8 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
   const { caseFile, dispatch, update } = useCaseFile(gateway, clock, saveDelayMs);
   const [status, setStatus] = useState('');
   const [problems, setProblems] = useState<string[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const dragDepth = useRef(0);
   const caseRef = useRef<CaseFile | null>(null);
   caseRef.current = caseFile;
   const threadRef = useRef<HTMLElement>(null);
@@ -180,7 +182,32 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
 
   return (
     <LangContext.Provider value={lang}>
-      <div className="av-app" lang={lang}>
+      <div
+        className="av-app"
+        lang={lang}
+        onDragEnter={(e) => {
+          if (![...e.dataTransfer.types].includes('Files')) return;
+          dragDepth.current += 1;
+          setDragging(true);
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        onDragLeave={() => {
+          dragDepth.current = Math.max(0, dragDepth.current - 1);
+          if (dragDepth.current === 0) setDragging(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          dragDepth.current = 0;
+          setDragging(false);
+          if (e.dataTransfer.files.length) void uploader.uploadFiles([...e.dataTransfer.files]);
+        }}
+      >
+        {dragging && (
+          <div className="av-drop" aria-hidden="true">
+            <img src={logo} alt="" width={48} height={48} />
+            {T('upload.dropHere')}
+          </div>
+        )}
         <header className="av-header">
           <span className="av-logo">
             <img src={logo} alt="" width={30} height={30} />

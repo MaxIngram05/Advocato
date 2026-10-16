@@ -31,11 +31,6 @@ export function Composer({
     <form
       className="av-composer"
       onSubmit={submit}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(e) => {
-        e.preventDefault();
-        onFiles([...e.dataTransfer.files]);
-      }}
     >
       <input
         ref={fileRef}
@@ -64,10 +59,14 @@ export function Composer({
         }}
       />
       <button type="button" className="av-icon-btn" aria-label={t('upload.add')} title={t('upload.add')} onClick={() => fileRef.current?.click()}>
-        📎
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+        </svg>
       </button>
       <button type="submit" className="av-send" disabled={disabled || !text.trim()} aria-label={t('chat.send')}>
-        ↑
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
       </button>
     </form>
   );

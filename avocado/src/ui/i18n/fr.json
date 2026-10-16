@@ -119,7 +119,8 @@
     "transcribing": "{name} ne contient pas de texte : transcription par OCR en cours…",
     "finishing": "Préparation de la liste des faits…",
     "working": "Je lis les documents…",
-    "held": "Pièces reçues : je les numéroterai dès que le rôle de votre client sera confirmé."
+    "held": "Pièces reçues : je les numéroterai dès que le rôle de votre client sera confirmé.",
+    "dropHere": "Déposez vos pièces ici (PDF, DOCX, TXT)"
   },
   "facts": {
     "title": "Faits",
