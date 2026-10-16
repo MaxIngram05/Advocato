@@ -12,7 +12,7 @@
     "build": "npm run build:ui && npm run build:server && node scripts/copy-manifest.mjs",
     "build:ui": "vite build",
     "build:server": "tsx scripts/build-server.ts",
-    "push": "npm run build && clasp push",
+    "push": "npm run build && clasp push --force",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
