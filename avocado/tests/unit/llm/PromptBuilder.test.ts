@@ -113,7 +113,7 @@ describe('§14.2 PromptBuilder (G1, G8, G10)', () => {
   });
 
   it('neutral tasks (stance suggestion, transcription, intake questions) need no stance and carry no perspective', () => {
-    expect(NEUTRAL_TASKS).toEqual(['detectMissingInfo', 'suggestStance', 'transcribePdf']);
+    expect(NEUTRAL_TASKS).toEqual(['detectMissingInfo', 'suggestStance', 'transcribePdf', 'translateDocument']);
     const { system } = new PromptBuilder().build({
       task: 'suggestStance',
       caseFile: analysisCase(undefined, 'en'),
