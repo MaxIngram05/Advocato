@@ -28,6 +28,10 @@ export interface LlmRequest<T> {
   user: string;
   schema: ZodType<T>;
   allowedSourceIds?: string[];
+  /** Smaller user message for retries after truncation or timeout (§10.2). */
+  compactUser?: string;
+  /** Start on the long-context model (ContextPacker says the input is over budget). */
+  preferLongContext?: boolean;
   /** Optional file part (scanned PDF transcription, §10.2). */
   file?: { name: string; mime: string; base64: string };
 }
