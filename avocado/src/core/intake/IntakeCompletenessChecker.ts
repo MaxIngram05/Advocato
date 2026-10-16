@@ -58,7 +58,8 @@ function isIsoDate(value: string | undefined): boolean {
 
 const filled = (v: string | undefined) => (v ?? '').trim().length > 0;
 
-export function checkIntake(draft: IntakeDraft): IntakeCheck {
+/** `stage: 'intake'` leaves out documents, which are uploaded after intake (D7). */
+export function checkIntake(draft: IntakeDraft, opts: { stage?: 'intake' | 'analysis' } = {}): IntakeCheck {
   const stanceOk = StanceSchema.safeParse(draft.stance).success;
   const ok: Record<IntakeField, boolean> = {
     court: filled(draft.court),
@@ -72,6 +73,7 @@ export function checkIntake(draft: IntakeDraft): IntakeCheck {
       (draft.parties ?? []).every((p) => filled(p.name) && filled(p.role)),
     documents: (draft.documentCount ?? 0) >= 1,
   };
+  if (opts.stage === 'intake') ok.documents = true;
   const missing = REQUIRED_INTAKE_FIELDS.filter((f) => !ok[f]);
   return { complete: missing.length === 0, missing };
 }

@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
-import { App } from '../../../src/ui/App';
+import { screen } from '@testing-library/react';
+import { renderApp } from './helpers';
 
 describe('M0 smoke', () => {
-  it('renders the Avocado sidebar shell', () => {
-    render(<App />);
-    expect(screen.getByRole('banner')).toHaveTextContent('Avocado');
+  it('renders the Avocado sidebar shell', async () => {
+    renderApp();
+    expect(await screen.findByRole('banner')).toHaveTextContent('Avocado');
   });
 });

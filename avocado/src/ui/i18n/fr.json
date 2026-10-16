@@ -1,0 +1,97 @@
+{
+  "appName": "Avocado",
+  "greeting": "Bonjour, hi",
+  "greetingPrompt": "Je vous aide à bâtir une matrice d’argumentation sourcée. Écrivez-moi pour commencer.",
+  "askLanguage": "Français ou English ? Choisissez une langue / Pick a language.",
+  "language": { "label": "Langue / Language" },
+  "chat": {
+    "label": "Conversation",
+    "input": "Votre message",
+    "send": "Envoyer",
+    "placeholder": "Écrivez ici…"
+  },
+  "step": {
+    "label": "Étape",
+    "GREETING": "Accueil",
+    "INTAKE": "Dossier",
+    "UPLOAD": "Pièces",
+    "FACT_REVIEW": "Faits",
+    "ANALYSING": "Analyse",
+    "ARGUMENT_PICK": "Arguments",
+    "COUNTER_REVIEW": "Répliques",
+    "WRITING": "Rédaction",
+    "ROUND_END": "Fin de ronde",
+    "STASIS": "Mode stase"
+  },
+  "intake": {
+    "title": "Ouverture du dossier",
+    "court": "Tribunal",
+    "courtOther": "Précisez le tribunal",
+    "areaOfLaw": "Domaine de droit",
+    "objective": "Objectif recherché",
+    "objectiveLocked": "Confirmez d’abord le rôle du client.",
+    "dateOfFacts": "Date des faits",
+    "parties": "Parties",
+    "partyName": "Nom",
+    "partyRole": "Rôle",
+    "addParty": "Ajouter une partie",
+    "procedureStage": "Étape de la procédure (facultatif)",
+    "opposingArguments": "Arguments déjà soulevés par l’autre partie (facultatif, un par ligne)",
+    "continue": "Continuer",
+    "missingIntro": "Il me manque quelques renseignements :",
+    "complete": "Merci, le dossier est ouvert. Passons aux pièces.",
+    "ask": {
+      "court": "Devant quel tribunal l’affaire sera-t-elle entendue?",
+      "areaOfLaw": "Quel est le domaine de droit?",
+      "stance": "Quel est le rôle de votre client (demandeur, défendeur ou autre)? Confirmez-le.",
+      "objective": "Quel résultat votre client recherche-t-il?",
+      "dateOfFacts": "Quelle est la date des faits (AAAA-MM-JJ)?",
+      "parties": "Qui sont les parties et quel est leur rôle?",
+      "documents": "Quelles pièces pouvez-vous me transmettre?"
+    }
+  },
+  "court": {
+    "cq-civil": "Cour du Québec, chambre civile",
+    "cq-small": "Cour du Québec, Division des petites créances",
+    "cs": "Cour supérieure",
+    "ca": "Cour d’appel",
+    "tribunal": "Tribunal administratif spécialisé",
+    "other": "Autre"
+  },
+  "area": {
+    "civil": "Civil",
+    "labour": "Travail",
+    "administrative": "Administratif",
+    "penal": "Pénal",
+    "human-rights": "Droits de la personne",
+    "consumer": "Consommation",
+    "other": "Autre"
+  },
+  "stance": {
+    "legend": "Rôle du client",
+    "claimant": "Demandeur",
+    "defendant": "Défendeur",
+    "other": "Autre",
+    "roleDescription": "Précisez le rôle",
+    "clientName": "Nom du client",
+    "opposingParties": "Parties adverses (séparées par des virgules)",
+    "confirm": "Confirmer le rôle",
+    "confirmed": "Rôle confirmé : {role} — {name}",
+    "invalid": "Indiquez le nom du client et, pour « Autre », décrivez le rôle.",
+    "suggestionTitle": "Rôle suggéré",
+    "suggestion": "Les documents suggèrent que {name} est {role}.",
+    "useSuggestion": "Utiliser cette suggestion"
+  },
+  "objective": {
+    "annulment": "Annulation de la vente",
+    "reduction": "Diminution du prix",
+    "damages": "Dommages-intérêts",
+    "dismissal": "Rejet de la demande",
+    "limit-remedy": "Limiter la réparation",
+    "reduce-amount": "Réduire le montant",
+    "other": "Autre"
+  },
+  "upload": {
+    "title": "Documents"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "appName": "Avocado",
+  "greeting": "Bonjour, hi",
+  "greetingPrompt": "I help you build a sourced argumentation matrix. Write to me to get started.",
+  "askLanguage": "Français ou English ? Choisissez une langue / Pick a language.",
+  "language": { "label": "Langue / Language" },
+  "chat": {
+    "label": "Conversation",
+    "input": "Your message",
+    "send": "Send",
+    "placeholder": "Type here…"
+  },
+  "step": {
+    "label": "Step",
+    "GREETING": "Welcome",
+    "INTAKE": "Case",
+    "UPLOAD": "Exhibits",
+    "FACT_REVIEW": "Facts",
+    "ANALYSING": "Analysis",
+    "ARGUMENT_PICK": "Arguments",
+    "COUNTER_REVIEW": "Rebuttals",
+    "WRITING": "Writing",
+    "ROUND_END": "Round end",
+    "STASIS": "Stasis mode"
+  },
+  "intake": {
+    "title": "Case intake",
+    "court": "Court",
+    "courtOther": "Specify the court",
+    "areaOfLaw": "Area of law",
+    "objective": "Outcome sought",
+    "objectiveLocked": "Confirm the client's role first.",
+    "dateOfFacts": "Date of facts",
+    "parties": "Parties",
+    "partyName": "Name",
+    "partyRole": "Role",
+    "addParty": "Add a party",
+    "procedureStage": "Procedure stage (optional)",
+    "opposingArguments": "Arguments already raised by the other side (optional, one per line)",
+    "continue": "Continue",
+    "missingIntro": "I still need a few details:",
+    "complete": "Thank you, the case is open. Let's move on to the exhibits.",
+    "ask": {
+      "court": "Which court will hear the case?",
+      "areaOfLaw": "What is the area of law?",
+      "stance": "What is your client's role (claimant, defendant or other)? Please confirm it.",
+      "objective": "What outcome is your client seeking?",
+      "dateOfFacts": "What is the date of the facts (YYYY-MM-DD)?",
+      "parties": "Who are the parties and what are their roles?",
+      "documents": "Which exhibits can you send me?"
+    }
+  },
+  "court": {
+    "cq-civil": "Cour du Québec, chambre civile",
+    "cq-small": "Cour du Québec, Division des petites créances",
+    "cs": "Cour supérieure",
+    "ca": "Cour d’appel",
+    "tribunal": "Specialized administrative tribunal",
+    "other": "Other"
+  },
+  "area": {
+    "civil": "Civil",
+    "labour": "Labour",
+    "administrative": "Administrative",
+    "penal": "Penal",
+    "human-rights": "Human rights",
+    "consumer": "Consumer",
+    "other": "Other"
+  },
+  "stance": {
+    "legend": "Client's role",
+    "claimant": "Claimant",
+    "defendant": "Defendant",
+    "other": "Other",
+    "roleDescription": "Describe the role",
+    "clientName": "Client name",
+    "opposingParties": "Opposing parties (comma-separated)",
+    "confirm": "Confirm role",
+    "confirmed": "Role confirmed: {role} — {name}",
+    "invalid": "Enter the client's name and, for \"Other\", describe the role.",
+    "suggestionTitle": "Suggested role",
+    "suggestion": "The documents suggest that {name} is the {role}.",
+    "useSuggestion": "Use this suggestion"
+  },
+  "objective": {
+    "annulment": "Annulment of the sale",
+    "reduction": "Price reduction",
+    "damages": "Damages",
+    "dismissal": "Dismissal of the claim",
+    "limit-remedy": "Limiting the remedy",
+    "reduce-amount": "Reducing the amount",
+    "other": "Other"
+  },
+  "upload": {
+    "title": "Documents"
+  }
+}

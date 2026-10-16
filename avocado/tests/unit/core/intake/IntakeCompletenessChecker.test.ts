@@ -64,6 +64,12 @@ describe('US-02 IntakeCompletenessChecker', () => {
     expect(checkIntake({ ...complete, ...patch } as IntakeDraft).missing).toEqual([field]);
   });
 
+  it('the intake stage does not require documents yet (D7); analysis does', () => {
+    const noDocs = { ...complete, documentCount: 0 };
+    expect(checkIntake(noDocs, { stage: 'intake' })).toEqual({ complete: true, missing: [] });
+    expect(checkIntake(noDocs).missing).toEqual(['documents']);
+  });
+
   it('treats an unconfirmed stance as missing (G10)', () => {
     const forged = { ...stance, confirmedByUser: false } as unknown as Stance;
     expect(checkIntake({ ...complete, stance: forged }).missing).toContain('stance');
