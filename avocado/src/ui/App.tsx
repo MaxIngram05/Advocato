@@ -107,9 +107,11 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
         gateway,
         extractors,
         t: (k, v) => t(caseRef.current?.session.lang ?? 'fr', k, v),
-        onCaseFile: (c) => update(() => c),
+        // Uploads never add chat messages server-side: keep the ones shown meanwhile.
+        onCaseFile: (c) => update((cur) => ({ ...c, messages: cur.messages })),
         onStatus: setStatus,
         onProblems: setProblems,
+        onSay: (role, text) => update((c) => ({ ...c, messages: [...c.messages, message(role, text)] })),
       }),
     [gateway, extractors, update],
   );

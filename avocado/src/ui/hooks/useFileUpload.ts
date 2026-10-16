@@ -30,6 +30,8 @@ export interface UploadDeps {
   onCaseFile: (c: CaseFile) => void;
   onStatus: (s: string) => void;
   onProblems: (p: string[]) => void;
+  /** Adds a chat message, so every upload gets an immediate visible reply. */
+  onSay: (role: 'user' | 'bot', text: string) => void;
 }
 
 /** File and selection intake, available at every step (exhibits are held until the stance is confirmed). */
@@ -57,11 +59,17 @@ export function makeUploader(deps: UploadDeps) {
     return update.caseFile;
   };
 
-  const uploadFiles = (files: File[]) =>
-    run(async (issues) => {
+  const uploadFiles = (files: File[]) => {
+    if (files.length === 0) return Promise.resolve();
+    deps.onSay('user', files.map((f) => `📎 ${f.name}`).join('\n'));
+    deps.onSay('bot', t('upload.receiving', { count: files.length }));
+    return run(async (issues) => {
       let current = deps.getCase();
+      const before = new Set(current.exhibits.map((e) => e.id));
+      const heldBefore = ((current.pendingDocs as unknown[] | undefined) ?? []).length;
       const docs: ExtractedDocument[] = [];
       for (const file of files) {
+        deps.onStatus(t('upload.reading', { name: file.name }));
         const result = await extractors.extract({ name: file.name, mime: file.type, size: file.size, bytes: () => readBytes(file) });
         if (result.ok) {
           docs.push({ name: file.name, mime: file.type || 'application/octet-stream', segments: result.segments, ...(result.pages ? { pages: result.pages } : {}) });
@@ -73,8 +81,18 @@ export function makeUploader(deps: UploadDeps) {
           issues.push(t('upload.failed', { name: file.name, reason: t(`upload.reason.${result.reason}`) }));
         }
       }
-      await ingest(current, docs, issues);
+      const after = await ingest(current, docs, issues);
+      const added = after.exhibits.filter((e) => !before.has(e.id));
+      const held = ((after.pendingDocs as unknown[] | undefined) ?? []).length - heldBefore;
+      if (added.length > 0) {
+        deps.onSay('bot', [t('upload.received', { count: added.length }), ...added.map((e) => `• ${e.id} — ${e.name}${e.pages ? ` (${e.pages} p.)` : ''}`), t('upload.nextAnalyse')].join('\n'));
+      } else if (held > 0) {
+        deps.onSay('bot', t('upload.heldReply', { count: held }));
+      } else if (issues.length > 0) {
+        deps.onSay('bot', t('upload.noneUsable'));
+      }
     });
+  };
 
   const useSelection = () =>
     run(async (issues) => {

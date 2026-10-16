@@ -120,7 +120,13 @@
     "finishing": "Préparation de la liste des faits…",
     "working": "Je lis les documents…",
     "held": "Pièces reçues : je les numéroterai dès que le rôle de votre client sera confirmé.",
-    "dropHere": "Déposez vos pièces ici (PDF, DOCX, TXT)"
+    "dropHere": "Déposez vos pièces ici (PDF, DOCX, TXT)",
+    "receiving": "Bien reçu! Je lis {count} document(s)…",
+    "reading": "Lecture de {name}…",
+    "received": "C’est fait : {count} pièce(s) ajoutée(s) au dossier.",
+    "nextAnalyse": "Ajoutez-en d’autres ou cliquez sur « Analyser les pièces » quand vous êtes prêt.",
+    "heldReply": "J’ai bien reçu {count} document(s). Je les numéroterai comme pièces dès que le rôle de votre client sera confirmé.",
+    "noneUsable": "Je n’ai pas pu lire ces documents. Voyez l’avertissement ci-dessous."
   },
   "facts": {
     "title": "Faits",
