@@ -1,8 +1,10 @@
 import { defaultExtractors } from './extraction/defaultExtractors';
-import { FakeServerGateway } from './gateway/FakeServerGateway';
+import { GasServerGateway, type ScriptRunLike } from './gateway/GasServerGateway';
 import type { ServerGateway } from './gateway/ServerGateway';
 
-/** UI composition root. The Apps Script gateway replaces the fake once the server RPCs exist. */
+declare const google: { script: { run: ScriptRunLike } };
+
+/** UI composition root for the Apps Script sidebar (§9.1). */
 export function composeUi(): { gateway: ServerGateway; clock: { now(): Date }; extractors: ReturnType<typeof defaultExtractors> } {
-  return { gateway: new FakeServerGateway(), clock: { now: () => new Date() }, extractors: defaultExtractors() };
+  return { gateway: new GasServerGateway(google.script.run), clock: { now: () => new Date() }, extractors: defaultExtractors() };
 }

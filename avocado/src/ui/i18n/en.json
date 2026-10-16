@@ -108,6 +108,39 @@
       "too-large": "file too large",
       "unsupported": "unsupported format",
       "unreadable": "unreadable or damaged file"
+    },
+    "analyse": "Analyse the exhibits",
+    "analysing": "Extracting facts from {id}…",
+    "transcribing": "{name} has no text layer: transcribing it with OCR…",
+    "finishing": "Preparing the fact list…"
+  },
+  "facts": {
+    "title": "Facts",
+    "legend": "Facts",
+    "intro": "Tick the facts to tie together into the argument. The list is in chronological order.",
+    "continue": "Continue with {count} selected facts",
+    "needOne": "Select at least one fact.",
+    "noSource": "No source",
+    "undated": "Undated",
+    "status": {
+      "provided": "Provided",
+      "proven": "Proven",
+      "hypothesis": "Hypothesis",
+      "missing": "Missing"
+    },
+    "position": {
+      "admitted": "Admitted",
+      "contested": "Contested",
+      "unknown": "Position unknown"
+    },
+    "favorability": {
+      "favorable": "Favorable",
+      "unfavorable": "Unfavorable",
+      "neutral": "Neutral"
     }
+  },
+  "errors": {
+    "generic": "Something went wrong: {message}",
+    "intakeIncomplete": "Information missing before analysis: {fields}"
   }
 }

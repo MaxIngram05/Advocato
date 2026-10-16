@@ -108,6 +108,39 @@
       "too-large": "fichier trop volumineux",
       "unsupported": "format non pris en charge",
       "unreadable": "fichier illisible ou endommagé"
+    },
+    "analyse": "Analyser les pièces",
+    "analysing": "Extraction des faits de {id}…",
+    "transcribing": "{name} ne contient pas de texte : transcription par OCR en cours…",
+    "finishing": "Préparation de la liste des faits…"
+  },
+  "facts": {
+    "title": "Faits",
+    "legend": "Faits",
+    "intro": "Cochez les faits à relier pour bâtir l’argument. La liste suit l’ordre chronologique.",
+    "continue": "Continuer avec {count} faits sélectionnés",
+    "needOne": "Sélectionnez au moins un fait.",
+    "noSource": "Aucune source",
+    "undated": "Non daté",
+    "status": {
+      "provided": "Fourni",
+      "proven": "Prouvé",
+      "hypothesis": "Hypothèse",
+      "missing": "Manquant"
+    },
+    "position": {
+      "admitted": "Admis",
+      "contested": "Contesté",
+      "unknown": "Position inconnue"
+    },
+    "favorability": {
+      "favorable": "Favorable",
+      "unfavorable": "Défavorable",
+      "neutral": "Neutre"
     }
+  },
+  "errors": {
+    "generic": "Une erreur est survenue : {message}",
+    "intakeIncomplete": "Renseignements manquants avant l’analyse : {fields}"
   }
 }

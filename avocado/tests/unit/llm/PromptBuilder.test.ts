@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { StanceNotConfirmedError } from '../../../src/core/errors';
-import { PromptBuilder, roleVariables } from '../../../src/llm/PromptBuilder';
+import { NEUTRAL_TASKS, PromptBuilder, roleVariables } from '../../../src/llm/PromptBuilder';
 import { PROMPT_TEMPLATES } from '../../../src/llm/prompts';
 import { analysisCase, buyerStance, fact, sellerStance } from '../../fixtures/cases';
 
@@ -107,7 +107,22 @@ describe('§14.2 PromptBuilder (G1, G8, G10)', () => {
         facts: [],
         payload: {},
       });
-      expect(system).toContain('<CLIENT>');
+      if (NEUTRAL_TASKS.includes(task as (typeof NEUTRAL_TASKS)[number])) expect(system).not.toContain('<CLIENT>');
+      else expect(system).toContain('<CLIENT>');
     }
+  });
+
+  it('neutral tasks (stance suggestion, transcription, intake questions) need no stance and carry no perspective', () => {
+    expect(NEUTRAL_TASKS).toEqual(['detectMissingInfo', 'suggestStance', 'transcribePdf']);
+    const { system } = new PromptBuilder().build({
+      task: 'suggestStance',
+      caseFile: analysisCase(undefined, 'en'),
+      allowedSources: [],
+      facts: [],
+      payload: {},
+    });
+    expect(system).toContain('You are a legal research assistant supporting a member of the Québec bar.');
+    expect(system).not.toMatch(/you act for/i);
+    expect(system).toContain('Never invent statutes');
   });
 });

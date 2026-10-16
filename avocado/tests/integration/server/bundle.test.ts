@@ -12,7 +12,7 @@ describe('M0 server bundle', () => {
     const context: Record<string, unknown> = {};
     vm.createContext(context);
     vm.runInContext(code, context);
-    for (const name of ['onOpen', 'onInstall', 'showSidebar']) {
+    for (const name of ['onOpen', 'onInstall', 'showSidebar', 'avocadoRpc']) {
       expect({ name, type: typeof context[name] }).toEqual({ name, type: 'function' });
       // Apps Script only lists real function declarations in triggers/menus.
       expect(code).toMatch(new RegExp(`^function ${name}[(]`, 'm'));

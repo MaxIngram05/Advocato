@@ -7,8 +7,8 @@ export interface CaseUpdate {
 }
 
 /**
- * Typed, Promise-based view of the server RPCs (§9.2). The Apps Script
- * implementation wraps `google.script.run`; dev and tests use fakes.
+ * Typed, Promise-based view of the server RPCs (§9.2). Production wraps
+ * `google.script.run`; dev and tests call the application in process.
  */
 export interface ServerGateway {
   /** Loads the case attached to the open document, or a fresh one (no stance, G10). */
@@ -17,5 +17,8 @@ export interface ServerGateway {
   /** Never auto-applied: the lawyer must confirm (G10). */
   suggestStance(caseFile: CaseFile): Promise<StanceSuggestion | null>;
   ingestDocuments(caseFile: CaseFile, docs: ExtractedDocument[]): Promise<CaseUpdate>;
+  transcribePdf(caseFile: CaseFile, pdf: { name: string; base64: string }): Promise<CaseUpdate>;
+  extractFacts(caseFile: CaseFile, exhibitId: string): Promise<CaseUpdate>;
+  finishIngestion(caseFile: CaseFile): Promise<CaseUpdate>;
   readSelection(): Promise<string>;
 }

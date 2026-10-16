@@ -3,6 +3,8 @@ import { newCaseFile, type CaseFile, type StanceSuggestion } from '../../core/mo
 import type { ExtractedDocument } from '../../ports';
 import type { CaseUpdate, ServerGateway } from './ServerGateway';
 
+const notScripted = (what: string) => Promise.reject(new Error(`FakeServerGateway: ${what} is not scripted`));
+
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 /** In-memory gateway for component tests. Records every call. */
@@ -40,5 +42,17 @@ export class FakeServerGateway implements ServerGateway {
 
   async readSelection(): Promise<string> {
     return this.selection;
+  }
+
+  transcribePdf(): Promise<CaseUpdate> {
+    return notScripted('transcribePdf');
+  }
+
+  extractFacts(): Promise<CaseUpdate> {
+    return notScripted('extractFacts');
+  }
+
+  finishIngestion(): Promise<CaseUpdate> {
+    return notScripted('finishIngestion');
   }
 }

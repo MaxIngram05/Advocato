@@ -11,7 +11,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.generated.ts', 'src/dev/**', 'src/ui/main.tsx', 'src/ui/compose.ts', 'src/ui/extraction/defaultExtractors.ts', 'src/server/compose.ts', 'src/**/types.ts'],
+      exclude: ['src/**/*.generated.ts', 'src/dev/**', 'src/ui/main.tsx', 'src/ui/compose.ts', 'src/ui/extraction/defaultExtractors.ts', 'src/server/compose.ts', 'src/server/main.ts', 'src/ui/types/**', 'src/**/types.ts'],
       thresholds: {
         'src/core/**': { lines: 90, branches: 90 },
         'src/llm/**': { lines: 90, branches: 90 },

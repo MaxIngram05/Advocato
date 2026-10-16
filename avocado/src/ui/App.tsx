@@ -9,6 +9,7 @@ import { LanguageToggle } from './components/LanguageToggle';
 import { MessageBubble } from './components/MessageBubble';
 import { StepIndicator } from './components/StepIndicator';
 import type { ServerGateway } from './gateway/ServerGateway';
+import { FactReviewStep } from './containers/FactReviewStep';
 import { UploadStep } from './containers/UploadStep';
 import type { ExtractorRegistry } from './extraction/ExtractorRegistry';
 import { useCaseFile, type Clock } from './hooks/useCaseFile';
@@ -107,6 +108,13 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
           )}
           {session.step === 'UPLOAD' && (
             <UploadStep caseFile={caseFile} gateway={gateway} extractors={extractors} onCaseFile={(c) => update(() => c)} />
+          )}
+          {session.step === 'FACT_REVIEW' && (
+            <FactReviewStep
+              key={session.round}
+              caseFile={caseFile}
+              onSelect={(factIds) => dispatch({ type: 'FACTS_SELECTED', factIds })}
+            />
           )}
           <ChatInput onSend={onSend} />
         </main>

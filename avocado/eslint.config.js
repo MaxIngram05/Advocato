@@ -50,7 +50,7 @@ export default tseslint.config(
             { from: 'adapters', allow: ['core', 'ports', 'llm', 'adapters'] },
             { from: 'server', allow: ['core', 'ports', 'llm', 'application', 'adapters', 'server'] },
             { from: 'ui', allow: ['core', 'ports', 'ui'] },
-            { from: 'dev', allow: ['core', 'ports', 'llm', 'application', 'adapters', 'ui', 'dev'] },
+            { from: 'dev', allow: ['core', 'ports', 'llm', 'application', 'adapters', 'server', 'ui', 'dev'] },
           ],
         },
       ],

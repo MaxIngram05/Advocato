@@ -24,6 +24,8 @@ export const ExhibitSchema = z.object({
   textRef: z.string(),
   pages: z.number().int().positive().optional(),
   ocr: z.boolean().optional(),
+  /** Facts have been extracted from this exhibit (US-04). */
+  factsExtracted: z.boolean().optional(),
 });
 
 export const FactSchema = z.object({

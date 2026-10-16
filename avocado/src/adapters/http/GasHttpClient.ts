@@ -4,7 +4,7 @@ import { lowerCaseKeys, type HttpClient, type HttpRequest, type HttpResponse } f
 export interface UrlFetchLike {
   fetch(
     url: string,
-    params: { method: 'get' | 'post'; headers: Record<string, string>; payload?: string; muteHttpExceptions: boolean },
+    params: { method: 'get' | 'post' | 'patch'; headers: Record<string, string>; payload?: string; muteHttpExceptions: boolean },
   ): { getResponseCode(): number; getContentText(charset?: string): string; getAllHeaders(): object };
 }
 

@@ -17,6 +17,8 @@ export interface GroundedRequest<T> {
   /** Smaller payload for retries after truncation/timeouts (§10.2). */
   compactPayload?: unknown;
   preferLongContext?: boolean;
+  /** Pseudo-exhibits the answer may cite besides the case exhibits (e.g. "chat"). */
+  extraExhibitIds?: string[];
   file?: { name: string; mime: string; base64: string };
 }
 
@@ -48,7 +50,7 @@ export class GroundedGenerator {
     const ctx = {
       allowedSourceIds: req.allowedSources.map((s) => s.id),
       factIds: req.caseFile.facts.map((f) => f.id),
-      exhibitIds: req.caseFile.exhibits.map((e) => e.id),
+      exhibitIds: [...req.caseFile.exhibits.map((e) => e.id), ...(req.extraExhibitIds ?? [])],
     };
     const calls: LlmCallLog[] = [];
     const alerts: Alert[] = [];
