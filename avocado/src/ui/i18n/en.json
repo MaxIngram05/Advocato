@@ -115,7 +115,7 @@
       "unreadable": "unreadable or damaged file"
     },
     "analyse": "Analyse the exhibits",
-    "analysing": "Extracting facts in parallel: {id}…",
+    "analysing": "Extracting facts…",
     "transcribing": "{name} has no text layer: transcribing it with OCR…",
     "finishing": "Preparing the fact list…",
     "working": "Reading the documents…",

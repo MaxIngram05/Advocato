@@ -115,7 +115,7 @@
       "unreadable": "fichier illisible ou endommagé"
     },
     "analyse": "Analyser les pièces",
-    "analysing": "Extraction des faits en parallèle : {id}…",
+    "analysing": "Extraction des faits…",
     "transcribing": "{name} ne contient pas de texte : transcription par OCR en cours…",
     "finishing": "Préparation de la liste des faits…",
     "working": "Je lis les documents…",
