@@ -133,6 +133,13 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
     try {
       const out = await gateway.converse(withMsg, text);
       update(() => out.caseFile);
+      // Documents held until the role was confirmed are now exhibits: lay out their facts.
+      const c = out.caseFile;
+      const needsFacts = c.exhibits.some((e) => !e.factsExtracted) || (c.session.step === 'UPLOAD' && c.exhibits.length > 0);
+      if (c.stance && needsFacts) {
+        setStatus('');
+        await uploader.reviewFacts(c);
+      }
     } catch (e) {
       setProblems([describeError(T, e)]);
     } finally {
@@ -271,7 +278,7 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
             </div>
           )}
 
-          {session.step === 'UPLOAD' && <UploadStep caseFile={caseFile} gateway={gateway} onBusy={setStatus} onCaseFile={(c) => update(() => c)} />}
+          {session.step === 'UPLOAD' && <UploadStep caseFile={caseFile} busy={!!status} onRetry={() => void uploader.reviewFacts(caseFile)} />}
           {session.step === 'FACT_REVIEW' && (
             <div className="av-card">
               <FactReviewStep
@@ -288,7 +295,12 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
           )}
           {session.step === 'ANALYSING' && (
             <div className="av-card av-card-doc">
-              <AnalysisStep caseFile={caseFile} gateway={gateway} onCaseFile={(c) => update(() => c)} />
+              <AnalysisStep
+                caseFile={caseFile}
+                gateway={gateway}
+                onCaseFile={(c) => update((cur) => ({ ...c, messages: cur.messages }))}
+                onSay={(text) => update((c) => ({ ...c, messages: [...c.messages, message('bot', text)] }))}
+              />
             </div>
           )}
 

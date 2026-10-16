@@ -23,4 +23,6 @@ export interface ServerGateway {
   readSelection(): Promise<string>;
   analyseCase(caseFile: CaseFile): Promise<CaseUpdate>;
   converse(caseFile: CaseFile, message: string): Promise<CaseUpdate>;
+  /** Reads the whole document first; appends only new sections (no overwrite). */
+  writeDocument(caseFile: CaseFile): Promise<{ caseFile: CaseFile; written: string[]; skipped: string[] }>;
 }

@@ -14,6 +14,16 @@ export class InMemoryDocumentWriter implements DocumentWriter {
     for (const name of rangeNames) this.sections.delete(name);
   }
 
+  /** Text typed by the user directly in the document (outside Advocato sections). */
+  userText = '';
+
+  async readDocument(): Promise<{ text: string; rangeNames: string[] }> {
+    const sectionText = this.ordered()
+      .flatMap((s) => s.blocks.flatMap((b) => [b.text ?? '', ...(b.items ?? []), ...(b.rows ?? []).flat()]))
+      .join(' ');
+    return { text: `${this.userText} ${sectionText}`, rangeNames: [...this.sections.keys()] };
+  }
+
   async readSelection(): Promise<string> {
     return this.selection;
   }

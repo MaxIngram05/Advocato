@@ -123,7 +123,7 @@
     "dropHere": "Déposez vos pièces ici (PDF, DOCX, TXT)",
     "receiving": "Bien reçu! Je lis {count} document(s)…",
     "reading": "Lecture de {name}…",
-    "received": "C’est fait : {count} pièce(s) ajoutée(s) au dossier.",
+    "received": "C’est fait : {count} pièce(s) ajoutée(s). J’en extrais les faits…",
     "nextAnalyse": "Ajoutez-en d’autres ou cliquez sur « Analyser les pièces » quand vous êtes prêt.",
     "heldReply": "J’ai bien reçu {count} document(s). Je les numéroterai comme pièces dès que le rôle de votre client sera confirmé.",
     "noneUsable": "Je n’ai pas pu lire ces documents. Voyez l’avertissement ci-dessous."
@@ -152,7 +152,8 @@
       "unfavorable": "Défavorable",
       "neutral": "Neutre"
     },
-    "selectedEcho": "{count} faits retenus : {ids}"
+    "selectedEcho": "{count} faits retenus : {ids}",
+    "added": "J’ai ajouté {count} nouveaux faits à la liste ci-dessous."
   },
   "errors": {
     "generic": "Une erreur est survenue : {message}",

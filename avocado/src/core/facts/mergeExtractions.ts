@@ -1,4 +1,5 @@
-import type { CaseFile } from '../model';
+import { factKey } from '../exhibits/fingerprint';
+import type { CaseFile, Fact } from '../model';
 
 /**
  * Merges fact extractions that ran in parallel from the same base case. Each run numbered
@@ -14,14 +15,27 @@ export function mergeExtractions(base: CaseFile, results: CaseFile[]): CaseFile 
   const alerts = [...base.alerts];
   const llmCalls = [...base.llmCalls];
   const done = new Set<string>();
+  const byKey = new Map<string, Fact>(facts.map((f) => [factKey(f.text), f]));
 
   results.forEach((r, runIndex) => {
     const rename = new Map<string, string>();
     for (const f of r.facts) {
       if (baseFactIds.has(f.id)) continue;
+      // The same fact found in several exhibits becomes one fact with all its sources.
+      const same = byKey.get(factKey(f.text));
+      if (same) {
+        rename.set(f.id, same.id);
+        const refs = [...same.sourceRefs, ...f.sourceRefs.filter((r) => !same.sourceRefs.some((s) => s.exhibitId === r.exhibitId && s.locator === r.locator))];
+        const merged = { ...same, sourceRefs: refs };
+        facts[facts.indexOf(same)] = merged;
+        byKey.set(factKey(f.text), merged);
+        continue;
+      }
       const id = `F-${n++}`;
       rename.set(f.id, id);
-      facts.push({ ...f, id });
+      const fresh = { ...f, id };
+      facts.push(fresh);
+      byKey.set(factKey(f.text), fresh);
     }
     for (const a of r.alerts) {
       if (baseAlertIds.has(a.id)) continue;

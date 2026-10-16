@@ -1,4 +1,5 @@
 import { exhibitPrefix, nextExhibitIds } from '../core/exhibits/exhibitNumbering';
+import { fingerprint } from '../core/exhibits/fingerprint';
 import type { Alert, CaseFile, Exhibit } from '../core/model';
 import type { ExhibitStore, ExtractedDocument, IdGenerator } from '../ports';
 
@@ -19,8 +20,23 @@ export class IngestDocuments {
   async execute(caseFile: CaseFile, docs: ExtractedDocument[]): Promise<IngestResult> {
     const prefix = exhibitPrefix(caseFile.stance);
     const alerts: Alert[] = [];
+    const seen = new Map(caseFile.exhibits.filter((e) => e.fingerprint).map((e) => [e.fingerprint as string, e.id]));
+    const batch = new Map<string, string>();
     const usable = docs.filter((d) => {
-      if (d.segments.length > 0) return true;
+      if (d.segments.length > 0) {
+        const fp = fingerprint(d.segments);
+        const dup = seen.get(fp) ?? batch.get(fp);
+        if (dup) {
+          alerts.push({
+            id: this.ids.next('AL'),
+            severity: 'warning',
+            message: `"${d.name}" is identical to ${dup}; it was not added again.`,
+          });
+          return false;
+        }
+        batch.set(fp, d.name);
+        return true;
+      }
       alerts.push({
         id: this.ids.next('AL'),
         severity: 'warning',
@@ -38,6 +54,7 @@ export class IngestDocuments {
         name: doc.name,
         mime: doc.mime,
         textRef,
+        fingerprint: fingerprint(doc.segments),
         ...(doc.pages ? { pages: doc.pages } : {}),
         ...(doc.ocr ? { ocr: true } : {}),
       });

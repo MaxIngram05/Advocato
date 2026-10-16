@@ -102,6 +102,8 @@ export interface DocumentWriter {
   upsertSection(s: RenderedSection): Promise<{ rangeName: string }>;
   removeRanges(rangeNames: string[]): Promise<void>;
   readSelection(): Promise<string>;
+  /** The whole document text and its named ranges, read before any write (no overlap). */
+  readDocument(): Promise<{ text: string; rangeNames: string[] }>;
 }
 
 export interface CaseRepository {

@@ -39,6 +39,9 @@ export class RpcGateway implements ServerGateway {
   converse(caseFile: CaseFile, message: string): Promise<CaseUpdate> {
     return this.invoke('converse', caseFile, message);
   }
+  writeDocument(caseFile: CaseFile): Promise<{ caseFile: CaseFile; written: string[]; skipped: string[] }> {
+    return this.invoke('writeDocument', caseFile);
+  }
   readSelection(): Promise<string> {
     return this.invoke('readSelection');
   }

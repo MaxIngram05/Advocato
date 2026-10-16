@@ -26,6 +26,8 @@ export const ExhibitSchema = z.object({
   ocr: z.boolean().optional(),
   /** Facts have been extracted from this exhibit (US-04). */
   factsExtracted: z.boolean().optional(),
+  /** Content fingerprint, to detect the same document uploaded twice. */
+  fingerprint: z.string().optional(),
 });
 
 export const FactSchema = z.object({

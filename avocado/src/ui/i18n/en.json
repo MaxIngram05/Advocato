@@ -123,7 +123,7 @@
     "dropHere": "Drop your exhibits here (PDF, DOCX, TXT)",
     "receiving": "Got it! Reading {count} document(s)…",
     "reading": "Reading {name}…",
-    "received": "Done: {count} exhibit(s) added to the case.",
+    "received": "Done: {count} exhibit(s) added. Extracting their facts…",
     "nextAnalyse": "Add more, or click “Analyse the exhibits” when you’re ready.",
     "heldReply": "I received {count} document(s). I’ll number them as exhibits as soon as your client’s role is confirmed.",
     "noneUsable": "I couldn’t read these documents. See the warning below."
@@ -152,7 +152,8 @@
       "unfavorable": "Unfavorable",
       "neutral": "Neutral"
     },
-    "selectedEcho": "{count} facts selected: {ids}"
+    "selectedEcho": "{count} facts selected: {ids}",
+    "added": "I added {count} new facts to the list below."
   },
   "errors": {
     "generic": "Something went wrong: {message}",

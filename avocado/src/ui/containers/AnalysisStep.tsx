@@ -349,10 +349,12 @@ export function AnalysisStep({
   caseFile,
   gateway,
   onCaseFile,
+  onSay,
 }: {
   caseFile: CaseFile;
   gateway: ServerGateway;
   onCaseFile: (c: CaseFile) => void;
+  onSay: (text: string) => void;
 }) {
   const t = useT();
   const l = L[caseFile.lang];
@@ -381,9 +383,28 @@ export function AnalysisStep({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [writing, setWriting] = useState(false);
+  const insert = async () => {
+    setWriting(true);
+    setError('');
+    try {
+      const out = await gateway.writeDocument(caseFile);
+      onCaseFile(out.caseFile);
+      onSay(
+        caseFile.lang === 'fr'
+          ? `J’ai lu le document puis ajouté ${out.written.length} section(s) à la fin, sans rien modifier.${out.skipped.length ? ` ${out.skipped.length} section(s) déjà présente(s) ont été laissées telles quelles.` : ''}`
+          : `I read the document, then appended ${out.written.length} section(s) at the end without changing anything.${out.skipped.length ? ` ${out.skipped.length} section(s) already there were left as they are.` : ''}`,
+      );
+    } catch (e) {
+      setError(describeError(t, e));
+    } finally {
+      setWriting(false);
+    }
+  };
+
   const download = () => {
     const html = document.getElementById('av-document')?.outerHTML ?? '';
-    const blob = new Blob([`<!doctype html><meta charset="utf-8"><title>Avocado</title>${html}`], { type: 'text/html' });
+    const blob = new Blob([`<!doctype html><meta charset="utf-8"><title>Advocato</title>${html}`], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `avocado-${caseFile.id}.html`;
@@ -399,8 +420,12 @@ export function AnalysisStep({
         </p>
       )}
       {analysis && <AnalysisDocument caseFile={caseFile} a={analysis} />}
+      {writing && <Spinner label={caseFile.lang === 'fr' ? 'Lecture du document et insertion…' : 'Reading the document and inserting…'} />}
       {analysis && (
         <p>
+          <button type="button" className="av-primary" disabled={writing} onClick={() => void insert()}>
+            {caseFile.lang === 'fr' ? 'Insérer dans le document' : 'Insert into the document'}
+          </button>{' '}
           <button type="button" onClick={download}>
             {l.download}
           </button>{' '}

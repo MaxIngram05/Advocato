@@ -52,6 +52,10 @@ export class FakeServerGateway implements ServerGateway {
     return notScripted('extractFacts');
   }
 
+  writeDocument(): Promise<{ caseFile: CaseFile; written: string[]; skipped: string[] }> {
+    return Promise.reject(new Error('FakeServerGateway: writeDocument is not scripted'));
+  }
+
   converse(): Promise<CaseUpdate> {
     return notScripted('converse');
   }

@@ -78,6 +78,8 @@ export const CaseFileSchema = z.object({
   pendingDocs: z.any().optional(),
   /** The legal issue as stated in the conversation (drives the CAIJ search). */
   legalIssue: z.string().optional(),
+  /** Named ranges Advocato wrote into the document. */
+  writtenRanges: z.any().optional(),
   /** MVP: the full grounded analysis (see application/AnalyseCase). */
   analysis: z.any().optional(),
   session: SessionStateSchema,

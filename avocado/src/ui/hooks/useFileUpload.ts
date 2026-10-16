@@ -1,6 +1,7 @@
 import { segmentParagraphs } from '../../core/exhibits/segments';
 import type { CaseFile } from '../../core/model';
 import type { ExtractedDocument } from '../../ports';
+import { mergeExtractions } from '../../core/facts/mergeExtractions';
 import { describeError } from '../errors';
 import { extensionOf, type ExtractorRegistry } from '../extraction/ExtractorRegistry';
 import type { ServerGateway } from '../gateway/ServerGateway';
@@ -81,16 +82,17 @@ export function makeUploader(deps: UploadDeps) {
           issues.push(t('upload.failed', { name: file.name, reason: t(`upload.reason.${result.reason}`) }));
         }
       }
-      const after = await ingest(current, docs, issues);
+      let after = await ingest(current, docs, issues);
       const added = after.exhibits.filter((e) => !before.has(e.id));
       const held = ((after.pendingDocs as unknown[] | undefined) ?? []).length - heldBefore;
       if (added.length > 0) {
-        deps.onSay('bot', [t('upload.received', { count: added.length }), ...added.map((e) => `• ${e.id} — ${e.name}${e.pages ? ` (${e.pages} p.)` : ''}`), t('upload.nextAnalyse')].join('\n'));
+        deps.onSay('bot', [t('upload.received', { count: added.length }), ...added.map((e) => `• ${e.id} — ${e.name}${e.pages ? ` (${e.pages} p.)` : ''}`)].join('\n'));
       } else if (held > 0) {
         deps.onSay('bot', t('upload.heldReply', { count: held }));
       } else if (issues.length > 0) {
         deps.onSay('bot', t('upload.noneUsable'));
       }
+      if (after.stance && after.exhibits.some((e) => !e.factsExtracted)) after = await extractPending(after);
     });
   };
 
@@ -104,5 +106,47 @@ export function makeUploader(deps: UploadDeps) {
       await ingest(deps.getCase(), [{ name: t('upload.selectionName'), mime: 'text/plain', segments }], issues);
     });
 
-  return { uploadFiles, useSelection };
+  /**
+   * Extracts facts from every exhibit not analysed yet (in parallel), then opens or refreshes
+   * the fact checklist, so facts are laid out right after the upload.
+   */
+  const extractPending = async (base: CaseFile): Promise<CaseFile> => {
+    const pendingIds = base.exhibits.filter((e) => !e.factsExtracted).map((e) => e.id);
+    let current = base;
+    if (pendingIds.length > 0) {
+      deps.onStatus(t('upload.analysing', { id: pendingIds.join(', ') }));
+      const settled = await Promise.allSettled(pendingIds.map((id) => gateway.extractFacts(base, id)));
+      current = mergeExtractions(base, settled.flatMap((s) => (s.status === 'fulfilled' ? [s.value.caseFile] : [])));
+      const newIds = current.facts.filter((f) => !base.facts.some((b) => b.id === f.id)).map((f) => f.id);
+      if (current.session.step !== 'INTAKE' && current.session.step !== 'UPLOAD' && newIds.length > 0) {
+        current = {
+          ...current,
+          session: { ...current.session, allFactIds: [...current.session.allFactIds, ...newIds], factPool: [...current.session.factPool, ...newIds] },
+        };
+        deps.onSay('bot', t('facts.added', { count: newIds.length }));
+      }
+      deps.onCaseFile(current);
+      const failed = settled.find((s): s is PromiseRejectedResult => s.status === 'rejected');
+      if (failed) {
+        await gateway.saveCase(current);
+        throw failed.reason;
+      }
+    }
+    if (current.session.step === 'UPLOAD' && current.exhibits.length > 0 && current.exhibits.every((e) => e.factsExtracted)) {
+      deps.onStatus(t('upload.finishing'));
+      current = (await gateway.finishIngestion(current)).caseFile;
+      deps.onCaseFile(current);
+    } else {
+      await gateway.saveCase(current);
+    }
+    return current;
+  };
+
+  /** Runs extraction with the usual status/problem reporting. */
+  const reviewFacts = (base: CaseFile) =>
+    run(async () => {
+      await extractPending(base);
+    });
+
+  return { uploadFiles, useSelection, reviewFacts, extractPending };
 }

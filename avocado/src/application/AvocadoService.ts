@@ -1,4 +1,5 @@
-import { newCaseFile, type CaseFile, type StanceSuggestion } from '../core/model';
+import { fingerprint } from '../core/exhibits/fingerprint';
+import { newCaseFile, type Alert, type CaseFile, type StanceSuggestion } from '../core/model';
 import { GroundedGenerator } from '../llm/GroundedGenerator';
 import { PromptBuilder } from '../llm/PromptBuilder';
 import type {
@@ -13,6 +14,7 @@ import type {
 } from '../ports';
 import { AnalyseCase } from './AnalyseCase';
 import { Converse } from './Converse';
+import { WriteDocument } from './WriteDocument';
 import { ExtractFacts, type CaseUpdate } from './ExtractFacts';
 import { FinishIngestion } from './FinishIngestion';
 import { IngestDocuments } from './IngestDocuments';
@@ -61,8 +63,19 @@ export class AvocadoService {
   async ingestDocuments(caseFile: CaseFile, docs: ExtractedDocument[]): Promise<CaseUpdate> {
     // Before the stance is confirmed, exhibits cannot be numbered yet: hold them.
     if (!caseFile.stance) {
-      const pending = [...((caseFile.pendingDocs as ExtractedDocument[] | undefined) ?? []), ...docs];
-      return this.persist({ caseFile: { ...caseFile, pendingDocs: pending }, alerts: [] });
+      const held = (caseFile.pendingDocs as ExtractedDocument[] | undefined) ?? [];
+      const known = new Set([...held.map((d) => fingerprint(d.segments)), ...caseFile.exhibits.map((e) => e.fingerprint)]);
+      const alerts: Alert[] = [];
+      const fresh = docs.filter((d) => {
+        const fp = fingerprint(d.segments);
+        if (known.has(fp)) {
+          alerts.push({ id: this.deps.ids.next('AL'), severity: 'warning', message: `"${d.name}" was already received; it was not added again.` });
+          return false;
+        }
+        known.add(fp);
+        return true;
+      });
+      return this.persist({ caseFile: { ...caseFile, pendingDocs: [...held, ...fresh] }, alerts });
     }
     return this.persist(await new IngestDocuments(this.deps.exhibits, this.deps.ids).execute(caseFile, docs));
   }
@@ -92,6 +105,12 @@ export class AvocadoService {
   async analyseCase(caseFile: CaseFile): Promise<CaseUpdate> {
     const search = this.deps.search ?? { search: () => Promise.reject(new Error('no CAIJ client configured')) };
     return this.persist(await new AnalyseCase(this.generator, search, this.deps.ids, () => this.deps.clock.now()).execute(caseFile));
+  }
+
+  async writeDocument(caseFile: CaseFile): Promise<{ caseFile: CaseFile; written: string[]; skipped: string[] }> {
+    const out = await new WriteDocument(this.deps.writer).execute(caseFile, this.deps.clock.now().toISOString().slice(0, 10));
+    await this.saveCase(out.caseFile);
+    return out;
   }
 
   async readSelection(): Promise<string> {

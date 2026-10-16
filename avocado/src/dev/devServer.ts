@@ -20,7 +20,7 @@ function loadEnv(root: string): Record<string, string> {
       if (m?.[1] && env[m[1]] === undefined) env[m[1]] = m[2] ?? '';
     }
   }
-  return { ...env, ...Object.fromEntries(Object.entries(process.env).filter(([k]) => k.startsWith('AUGURE_') || k.startsWith('CAIJ_')) as [string, string][]) };
+  return { ...env, ...Object.fromEntries(Object.entries(process.env).filter(([k]) => k.startsWith('AUGURE_') || k.startsWith('CAIJ_') || k.startsWith('COMPAGNON_')) as [string, string][]) };
 }
 
 /** Local server: the real application with live Augure + CAIJ, in-memory storage (MVP demo). */
@@ -44,7 +44,8 @@ export function avocadoDevServer(root: string): Plugin {
           },
           sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
         }),
-        search: new CaijSearch(http, env.CAIJ_BASE_URL || 'https://hackathon.caij.qc.ca'),
+        // Compagnon (CAIJ semantic search): only for precedents and sources for the argument.
+        search: new CaijSearch(http, (env.COMPAGNON_API_URL || env.CAIJ_BASE_URL || 'https://hackathon.caij.qc.ca').trim().replace(/\/+$/, '')),
         writer: new InMemoryDocumentWriter(),
         ids: { next: (p) => `${p}-${++n}` },
         clock: { now: () => new Date() },
