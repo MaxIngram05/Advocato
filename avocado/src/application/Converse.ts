@@ -129,7 +129,7 @@ export class Converse {
       missingInformation: caseFile.session.step === 'INTAKE' ? missingIntake(caseFile).map((k) => MISSING_LABEL[k] ?? k) : [],
       nextStep:
         caseFile.session.step === 'INTAKE' || caseFile.session.step === 'UPLOAD'
-          ? 'the lawyer attaches the exhibits with the paperclip, then clicks "Analyse the exhibits"'
+          ? 'the lawyer attaches the exhibits with the paperclip; their facts are then extracted automatically (do not mention any button)'
           : caseFile.session.step === 'FACT_REVIEW'
             ? 'the lawyer ticks the facts to use, then continues'
             : 'the lawyer reviews the draft and can ask questions about it',
