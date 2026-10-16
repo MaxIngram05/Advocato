@@ -99,7 +99,7 @@ fieldset { border: 0; margin: 0 0 8px; padding: 0; }
   background: var(--av-surface); border: 1px solid var(--av-line); border-radius: 18px; box-shadow: var(--av-shadow);
 }
 .av-composer:focus-within { border-color: var(--av-highlight); }
-.av-composer textarea { flex: 1; border: 0; outline: none; resize: none; background: transparent; color: var(--av-ink); padding: 7px 4px; max-height: 120px; line-height: 1.4; }
+.av-composer textarea { flex: 1; border: 0; outline: none; resize: none; background: transparent; color: var(--av-ink); padding: 7px 8px; min-height: 34px; max-height: 40vh; overflow-y: auto; line-height: 1.4; }
 .av-icon-btn { width: 32px; height: 32px; border-radius: 50%; border: 0; background: transparent; color: var(--av-bg); flex: none; display: inline-flex; align-items: center; justify-content: center; }
 .av-icon-btn:hover { background: #EEF4E2; }
 .av-send { width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--av-bg); color: var(--av-text); flex: none; display: inline-flex; align-items: center; justify-content: center; }

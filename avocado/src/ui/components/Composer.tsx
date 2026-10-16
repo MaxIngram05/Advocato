@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type FormEvent } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { useT } from '../i18n';
 
 export const ACCEPTED_UPLOADS =
@@ -20,6 +20,14 @@ export function Composer({
   const id = useId();
   const fileRef = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
+  const areaRef = useRef<HTMLTextAreaElement>(null);
+  // Grow with the content (up to the CSS max-height, then scroll inside).
+  useLayoutEffect(() => {
+    const el = areaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [text]);
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const value = text.trim();
@@ -49,6 +57,7 @@ export function Composer({
         {t('chat.input')}
       </label>
       <textarea
+        ref={areaRef}
         id={id}
         rows={1}
         value={text}
