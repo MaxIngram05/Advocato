@@ -24,7 +24,7 @@ const svc = new AvocadoService({
   exhibits: new InMemoryExhibitStore(),
   llm: new AugureLlmClient({
     http,
-    config: { apiKey: env.AUGURE_API_KEY ?? '', baseUrl: 'https://api.augureai.ca/v1', model: 'ossington-4-1', longContextModel: 'rosedale-1' },
+    config: { apiKey: env.AUGURE_API_KEY ?? '', baseUrl: 'https://api.augureai.ca/v1', model: 'ossington-5', longContextModel: 'rosedale-1' },
     sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
   }),
   search: new CaijSearch(http, 'https://hackathon.caij.qc.ca'),

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CaseFile } from '../../core/model';
+import { mergeExtractions } from '../../core/facts/mergeExtractions';
 import { describeError } from '../errors';
 import type { ServerGateway } from '../gateway/ServerGateway';
 import { useT } from '../i18n';
@@ -21,14 +22,20 @@ export function UploadStep({ caseFile, gateway, onCaseFile, onBusy }: UploadStep
     setBusy(true);
     setError('');
     try {
-      let current = caseFile;
-      for (const exhibit of current.exhibits.filter((e) => !e.factsExtracted)) {
-        onBusy(t('upload.analysing', { id: exhibit.id }));
-        current = (await gateway.extractFacts(current, exhibit.id)).caseFile;
-        onCaseFile(current);
+      // All exhibits at once (one LLM call each), then merged with sequential fact ids.
+      const pending = caseFile.exhibits.filter((e) => !e.factsExtracted).map((e) => e.id);
+      onBusy(t('upload.analysing', { id: pending.join(', ') }));
+      const settled = await Promise.allSettled(pending.map((id) => gateway.extractFacts(caseFile, id)));
+      const ok = settled.flatMap((s) => (s.status === 'fulfilled' ? [s.value.caseFile] : []));
+      const merged = mergeExtractions(caseFile, ok);
+      onCaseFile(merged);
+      const failed = settled.find((s): s is PromiseRejectedResult => s.status === 'rejected');
+      if (failed) {
+        await gateway.saveCase(merged);
+        throw failed.reason;
       }
       onBusy(t('upload.finishing'));
-      onCaseFile((await gateway.finishIngestion(current)).caseFile);
+      onCaseFile((await gateway.finishIngestion(merged)).caseFile);
     } catch (e) {
       setError(describeError(t, e));
     } finally {

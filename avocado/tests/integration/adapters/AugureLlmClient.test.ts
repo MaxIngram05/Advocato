@@ -81,7 +81,7 @@ describe('§10.2 AugureLlmClient request shape', () => {
       suggestNextPrompts: 'low',
       proofread: 'low',
       detectMissingInfo: 'low',
-      extractFacts: 'medium',
+      extractFacts: 'low',
       buildMatrixRows: 'medium',
       proposeArguments: 'high',
       generateCounterArguments: 'high',

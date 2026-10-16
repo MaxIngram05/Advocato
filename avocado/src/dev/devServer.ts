@@ -39,7 +39,7 @@ export function avocadoDevServer(root: string): Plugin {
           config: {
             apiKey: env.AUGURE_API_KEY ?? '',
             baseUrl: env.AUGURE_BASE_URL || 'https://api.augureai.ca/v1',
-            model: env.AUGURE_MODEL && env.AUGURE_MODEL !== 'auto' ? env.AUGURE_MODEL : 'ossington-4-1',
+            model: env.AUGURE_MODEL && env.AUGURE_MODEL !== 'auto' ? env.AUGURE_MODEL : 'ossington-5',
             longContextModel: env.AUGURE_LONG_CONTEXT_MODEL || 'rosedale-1',
           },
           sleep: (ms) => new Promise((r) => setTimeout(r, ms)),

@@ -22,7 +22,7 @@ export const REASONING_EFFORT: Record<LlmTask, Effort> = {
   detectMissingInfo: 'low',
   suggestStance: 'low',
   transcribePdf: 'low',
-  extractFacts: 'medium',
+  extractFacts: 'low',
   buildMatrixRows: 'medium',
   assessDamages: 'medium',
   draftDocument: 'medium',
