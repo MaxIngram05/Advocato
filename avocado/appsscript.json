@@ -1,0 +1,16 @@
+{
+  "timeZone": "America/Toronto",
+  "runtimeVersion": "V8",
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/documents.currentonly",
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/drive.file"
+  ],
+  "urlFetchWhitelist": [
+    "https://api.augureai.ca/",
+    "https://hackathon.caij.qc.ca/",
+    "https://www.legisquebec.gouv.qc.ca/"
+  ]
+}
