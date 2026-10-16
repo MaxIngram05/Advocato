@@ -74,11 +74,16 @@ export function mapCaijResults(parsed: { results?: Record<string, RawResult[]> }
 
 /** §10.1 CAIJ semantic search (SSE body read whole; UrlFetchApp/fetch do not stream). */
 export class CaijSearch implements JurisprudenceSearch {
+  private readonly baseUrl: string;
+
   constructor(
     private readonly http: HttpClient,
-    private readonly baseUrl: string,
+    baseUrl: string,
     private readonly opts: { clarifications?: string; types?: Request['search_types'] } = {},
-  ) {}
+  ) {
+    // Accept the host alone or the full endpoint URL (COMPAGNON_API_URL is often given with the path).
+    this.baseUrl = baseUrl.trim().replace(/\/+$/, '').replace(/\/semantic-search$/, '');
+  }
 
   async search(q: { text: string; lang: 'fr' | 'en'; limit: number }): Promise<JurisprudenceHit[]> {
     const body: Request = {
