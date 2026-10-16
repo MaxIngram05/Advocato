@@ -1,0 +1,15 @@
+{
+  "request": {
+    "query": "clause d’exclusion de garantie vente aux risques et périls de l’acheteur vendeur qui connaissait le vice",
+    "search_types": [
+      "jurisprudence",
+      "legislation",
+      "doctrine"
+    ],
+    "top_k": 10
+  },
+  "status": 200,
+  "contentType": "text/event-stream; charset=utf-8",
+  "ms": 135485,
+  "bytes": 1114
+}

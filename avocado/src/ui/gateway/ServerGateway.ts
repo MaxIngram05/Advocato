@@ -21,4 +21,5 @@ export interface ServerGateway {
   extractFacts(caseFile: CaseFile, exhibitId: string): Promise<CaseUpdate>;
   finishIngestion(caseFile: CaseFile): Promise<CaseUpdate>;
   readSelection(): Promise<string>;
+  analyseCase(caseFile: CaseFile): Promise<CaseUpdate>;
 }

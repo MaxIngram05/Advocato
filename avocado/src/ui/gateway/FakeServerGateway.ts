@@ -52,6 +52,10 @@ export class FakeServerGateway implements ServerGateway {
     return notScripted('extractFacts');
   }
 
+  analyseCase(): Promise<CaseUpdate> {
+    return notScripted('analyseCase');
+  }
+
   finishIngestion(): Promise<CaseUpdate> {
     return notScripted('finishIngestion');
   }

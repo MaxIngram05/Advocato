@@ -8,8 +8,10 @@ import type {
   ExhibitStore,
   ExtractedDocument,
   IdGenerator,
+  JurisprudenceSearch,
   LlmClient,
 } from '../ports';
+import { AnalyseCase } from './AnalyseCase';
 import { ExtractFacts, type CaseUpdate } from './ExtractFacts';
 import { FinishIngestion } from './FinishIngestion';
 import { IngestDocuments } from './IngestDocuments';
@@ -23,6 +25,7 @@ export interface ServiceDeps {
   exhibits: ExhibitStore;
   llm: LlmClient;
   writer: DocumentWriter;
+  search?: JurisprudenceSearch;
   ids: IdGenerator;
   clock: Clock;
   /** Id of the document the add-on is open in. */
@@ -68,6 +71,11 @@ export class AvocadoService {
 
   async finishIngestion(caseFile: CaseFile): Promise<CaseUpdate> {
     return this.persist(new FinishIngestion().execute(caseFile));
+  }
+
+  async analyseCase(caseFile: CaseFile): Promise<CaseUpdate> {
+    const search = this.deps.search ?? { search: () => Promise.reject(new Error('no CAIJ client configured')) };
+    return this.persist(await new AnalyseCase(this.generator, search, this.deps.ids, () => this.deps.clock.now()).execute(caseFile));
   }
 
   async readSelection(): Promise<string> {

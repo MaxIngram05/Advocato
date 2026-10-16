@@ -70,6 +70,8 @@ export const CaseFileSchema = z.object({
   messages: z.array(ChatMessageSchema),
   snapshots: z.array(CaseSnapshotSchema),
   llmCalls: z.array(LlmCallLogSchema),
+  /** MVP: the full grounded analysis (see application/AnalyseCase). */
+  analysis: z.any().optional(),
   session: SessionStateSchema,
   schemaVersion: z.number().int().positive(),
 });

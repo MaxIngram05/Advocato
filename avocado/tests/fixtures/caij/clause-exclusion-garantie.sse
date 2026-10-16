@@ -1,0 +1,31 @@
+event: status
+data: {"stage": "step_list", "steps": [{"stage": "init", "message": "compagnon_statusMsg_initializingSearch", "arguments": [], "estimatedDurationSec": 1}, {"stage": "filter_detect", "message": "compagnon_statusMsg_filterDetection", "arguments": [], "estimatedDurationSec": 5}, {"stage": "search", "message": "compagnon_statusMsg_searchingDatabases", "arguments": [], "estimatedDurationSec": 10}]}
+
+event: status
+data: {"stage": "init", "message": "compagnon_statusMsg_initializingSearch", "arguments": []}
+
+event: status
+data: {"stage": "filter_detect", "message": "compagnon_statusMsg_filterDetection", "arguments": []}
+
+event: status
+data: {"stage": "search", "message": "compagnon_statusMsg_searchingDatabases", "arguments": []}
+
+: keep-alive
+
+: keep-alive
+
+: keep-alive
+
+: keep-alive
+
+: keep-alive
+
+: keep-alive
+
+: keep-alive
+
+: keep-alive
+
+event: error
+data: {"code": "SEARCH_FAILED", "message": "No documents to analyze — step_1: Step 'step_1' (thematique) exceeded its 120s budget.", "translation_key": "compagnon_errorMsg_SearchFailed", "request_id": "f2360933-35ca-4b1b-b1e1-79aff5882674"}
+

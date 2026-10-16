@@ -1,0 +1,22 @@
+{
+  "request": {
+    "query": "présomption de connaissance du vice par le vendeur professionnel dommages-intérêts",
+    "search_types": [
+      "jurisprudence"
+    ],
+    "top_k": 10,
+    "search_filters": [
+      {
+        "type": "jurisdiction",
+        "jurisdiction_found": true,
+        "jurisdiction_to_search": [
+          "Québec"
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "contentType": "text/event-stream; charset=utf-8",
+  "ms": 33069,
+  "bytes": 2398025
+}

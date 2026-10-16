@@ -119,3 +119,9 @@ fieldset { border: 1px solid var(--av-border); border-radius: var(--av-radius); 
 .av-visually-hidden {
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
+
+.av-doc { background: var(--av-text); color: var(--av-border); }
+.av-doc a { color: #1A4D8C; }
+.av-doc h3 { font-size: 13px; margin: 12px 0 4px; }
+.av-matrix { border-collapse: collapse; font-size: 11px; }
+.av-matrix th, .av-matrix td { border: 1px solid var(--av-border); padding: 2px 4px; vertical-align: top; }

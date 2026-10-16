@@ -20,7 +20,8 @@ export type LlmTask =
   | 'proofread'
   | 'findWeaknesses'
   | 'suggestNextPrompts'
-  | 'transcribePdf';
+  | 'transcribePdf'
+  | 'buildAnalysis';
 
 export interface LlmRequest<T> {
   task: LlmTask;

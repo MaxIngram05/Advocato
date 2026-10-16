@@ -1,0 +1,13 @@
+{
+  "request": {
+    "query": "latent defect warranty of quality seller knowledge Quebec civil code",
+    "search_types": [
+      "jurisprudence"
+    ],
+    "top_k": 5
+  },
+  "status": 200,
+  "contentType": "text/event-stream; charset=utf-8",
+  "ms": 273333,
+  "bytes": 2039466
+}

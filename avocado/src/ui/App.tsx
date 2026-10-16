@@ -9,6 +9,7 @@ import { LanguageToggle } from './components/LanguageToggle';
 import { MessageBubble } from './components/MessageBubble';
 import { StepIndicator } from './components/StepIndicator';
 import type { ServerGateway } from './gateway/ServerGateway';
+import { AnalysisStep } from './containers/AnalysisStep';
 import { FactReviewStep } from './containers/FactReviewStep';
 import { UploadStep } from './containers/UploadStep';
 import type { ExtractorRegistry } from './extraction/ExtractorRegistry';
@@ -115,6 +116,9 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
               caseFile={caseFile}
               onSelect={(factIds) => dispatch({ type: 'FACTS_SELECTED', factIds })}
             />
+          )}
+          {session.step === 'ANALYSING' && (
+            <AnalysisStep caseFile={caseFile} gateway={gateway} onCaseFile={(c) => update(() => c)} />
           )}
           <ChatInput onSend={onSend} />
         </main>

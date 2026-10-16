@@ -1,0 +1,23 @@
+{
+  "request": {
+    "query": "dénonciation écrite du vice caché dans un délai raisonnable article 1739 C.c.Q.",
+    "search_types": [
+      "jurisprudence",
+      "legislation"
+    ],
+    "top_k": 10,
+    "search_filters": [
+      {
+        "type": "jurisdiction",
+        "jurisdiction_found": true,
+        "jurisdiction_to_search": [
+          "Québec"
+        ]
+      }
+    ]
+  },
+  "status": 200,
+  "contentType": "text/event-stream; charset=utf-8",
+  "ms": 80940,
+  "bytes": 1857426
+}

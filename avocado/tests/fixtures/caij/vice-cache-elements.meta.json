@@ -1,0 +1,24 @@
+{
+  "request": {
+    "query": "garantie de qualité vice caché conditions grave antérieur inconnu de l’acheteur caché",
+    "search_types": [
+      "jurisprudence",
+      "legislation"
+    ],
+    "top_k": 10,
+    "search_filters": [
+      {
+        "type": "jurisdiction",
+        "jurisdiction_found": true,
+        "jurisdiction_to_search": [
+          "Québec"
+        ]
+      }
+    ],
+    "clarifications": "Droit civil québécois, vente immobilière, Cour du Québec, faits en 2025."
+  },
+  "status": 200,
+  "contentType": "text/event-stream; charset=utf-8",
+  "ms": 32645,
+  "bytes": 2082866
+}

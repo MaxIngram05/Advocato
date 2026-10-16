@@ -33,6 +33,9 @@ export class RpcGateway implements ServerGateway {
   finishIngestion(caseFile: CaseFile): Promise<CaseUpdate> {
     return this.invoke('finishIngestion', caseFile);
   }
+  analyseCase(caseFile: CaseFile): Promise<CaseUpdate> {
+    return this.invoke('analyseCase', caseFile);
+  }
   readSelection(): Promise<string> {
     return this.invoke('readSelection');
   }
