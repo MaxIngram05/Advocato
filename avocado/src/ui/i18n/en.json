@@ -3,7 +3,9 @@
   "greeting": "Bonjour, hi",
   "greetingPrompt": "I help you build a sourced argumentation matrix. Write to me to get started.",
   "askLanguage": "Français ou English ? Choisissez une langue / Pick a language.",
-  "language": { "label": "Langue / Language" },
+  "language": {
+    "label": "Langue / Language"
+  },
   "chat": {
     "label": "Conversation",
     "input": "Your message",
@@ -92,6 +94,20 @@
     "other": "Other"
   },
   "upload": {
-    "title": "Documents"
+    "title": "Documents",
+    "prompt": "Add the case exhibits. Accepted formats: PDF, DOCX, TXT, or the text selected in the document.",
+    "add": "Add documents (PDF, DOCX, TXT)",
+    "useSelection": "Use the selected text in the document",
+    "exhibits": "Exhibits",
+    "ocr": "transcribed by OCR",
+    "selectionName": "Document selection",
+    "nothingSelected": "Nothing is selected in the document.",
+    "failed": "{name}: {reason}. Please provide another format (text PDF, DOCX or TXT).",
+    "reason": {
+      "no-text": "no extractable text (scanned document?)",
+      "too-large": "file too large",
+      "unsupported": "unsupported format",
+      "unreadable": "unreadable or damaged file"
+    }
   }
 }

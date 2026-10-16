@@ -9,6 +9,8 @@ import { LanguageToggle } from './components/LanguageToggle';
 import { MessageBubble } from './components/MessageBubble';
 import { StepIndicator } from './components/StepIndicator';
 import type { ServerGateway } from './gateway/ServerGateway';
+import { UploadStep } from './containers/UploadStep';
+import type { ExtractorRegistry } from './extraction/ExtractorRegistry';
 import { useCaseFile, type Clock } from './hooks/useCaseFile';
 import { LangContext, t } from './i18n';
 import './theme.css';
@@ -16,11 +18,12 @@ import './theme.css';
 export interface AppProps {
   gateway: ServerGateway;
   clock: Clock;
+  extractors: ExtractorRegistry;
   saveDelayMs?: number;
 }
 
-export function App({ gateway, clock, saveDelayMs = 1000 }: AppProps) {
-  const { caseFile, dispatch, say } = useCaseFile(gateway, clock, saveDelayMs);
+export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps) {
+  const { caseFile, dispatch, say, update } = useCaseFile(gateway, clock, saveDelayMs);
   const [suggestion, setSuggestion] = useState<StanceSuggestion | null>(null);
   const step = caseFile?.session.step;
 
@@ -103,9 +106,7 @@ export function App({ gateway, clock, saveDelayMs = 1000 }: AppProps) {
             />
           )}
           {session.step === 'UPLOAD' && (
-            <section className="av-panel" aria-labelledby="av-upload-title">
-              <h2 id="av-upload-title">{t(lang, 'upload.title')}</h2>
-            </section>
+            <UploadStep caseFile={caseFile} gateway={gateway} extractors={extractors} onCaseFile={(c) => update(() => c)} />
           )}
           <ChatInput onSend={onSend} />
         </main>

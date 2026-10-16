@@ -3,7 +3,9 @@
   "greeting": "Bonjour, hi",
   "greetingPrompt": "Je vous aide à bâtir une matrice d’argumentation sourcée. Écrivez-moi pour commencer.",
   "askLanguage": "Français ou English ? Choisissez une langue / Pick a language.",
-  "language": { "label": "Langue / Language" },
+  "language": {
+    "label": "Langue / Language"
+  },
   "chat": {
     "label": "Conversation",
     "input": "Votre message",
@@ -92,6 +94,20 @@
     "other": "Autre"
   },
   "upload": {
-    "title": "Documents"
+    "title": "Documents",
+    "prompt": "Ajoutez les pièces du dossier. Formats acceptés : PDF, DOCX, TXT, ou le texte sélectionné dans le document.",
+    "add": "Ajouter des documents (PDF, DOCX, TXT)",
+    "useSelection": "Utiliser le texte sélectionné dans le document",
+    "exhibits": "Pièces",
+    "ocr": "transcrit par OCR",
+    "selectionName": "Sélection du document",
+    "nothingSelected": "Rien n’est sélectionné dans le document.",
+    "failed": "{name} : {reason}. Merci de fournir un autre format (PDF texte, DOCX ou TXT).",
+    "reason": {
+      "no-text": "aucun texte extractible (document numérisé?)",
+      "too-large": "fichier trop volumineux",
+      "unsupported": "format non pris en charge",
+      "unreadable": "fichier illisible ou endommagé"
+    }
   }
 }

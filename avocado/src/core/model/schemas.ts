@@ -14,6 +14,9 @@ export const SourceRefSchema = z.object({
   excerpt: z.string(),
 });
 
+/** One segment of exhibit text with its locator ("p. 3", "para. 4"). */
+export const ExhibitSegmentSchema = z.object({ locator: z.string(), text: z.string() });
+
 export const ExhibitSchema = z.object({
   id: z.string(),
   name: z.string(),

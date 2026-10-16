@@ -7,6 +7,7 @@ import {
   CitationSchema,
   CounterArgumentSchema,
   ExhibitSchema,
+  ExhibitSegmentSchema,
   FactPositionSchema,
   FactSchema,
   FactStatusSchema,
@@ -80,6 +81,7 @@ export type Favorability = z.infer<typeof FavorabilitySchema>;
 export type Severity = z.infer<typeof SeveritySchema>;
 export type SourceRef = z.infer<typeof SourceRefSchema>;
 export type Exhibit = z.infer<typeof ExhibitSchema>;
+export type ExhibitSegment = z.infer<typeof ExhibitSegmentSchema>;
 export type Fact = z.infer<typeof FactSchema>;
 export type Verification = z.infer<typeof VerificationSchema>;
 export type Citation = z.infer<typeof CitationSchema>;

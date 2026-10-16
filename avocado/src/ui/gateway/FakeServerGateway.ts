@@ -1,11 +1,15 @@
+import { exhibitPrefix, nextExhibitIds } from '../../core/exhibits/exhibitNumbering';
 import { newCaseFile, type CaseFile, type StanceSuggestion } from '../../core/model';
-import type { ServerGateway } from './ServerGateway';
+import type { ExtractedDocument } from '../../ports';
+import type { CaseUpdate, ServerGateway } from './ServerGateway';
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
-/** In-memory gateway for tests and the dev harness. Records every save. */
+/** In-memory gateway for component tests. Records every call. */
 export class FakeServerGateway implements ServerGateway {
   readonly saved: CaseFile[] = [];
+  readonly ingested: ExtractedDocument[][] = [];
+  selection = '';
   private stored: CaseFile | null;
   private readonly suggestion: StanceSuggestion | null;
 
@@ -25,5 +29,16 @@ export class FakeServerGateway implements ServerGateway {
 
   async suggestStance(): Promise<StanceSuggestion | null> {
     return this.suggestion ? clone(this.suggestion) : null;
+  }
+
+  async ingestDocuments(caseFile: CaseFile, docs: ExtractedDocument[]): Promise<CaseUpdate> {
+    this.ingested.push(clone(docs));
+    const ids = nextExhibitIds(caseFile.exhibits, exhibitPrefix(caseFile.stance), docs.length);
+    const exhibits = docs.map((d, i) => ({ id: ids[i] as string, name: d.name, mime: d.mime, textRef: `fake:${ids[i]}` }));
+    return { caseFile: { ...caseFile, exhibits: [...caseFile.exhibits, ...exhibits] }, alerts: [] };
+  }
+
+  async readSelection(): Promise<string> {
+    return this.selection;
   }
 }
