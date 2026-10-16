@@ -66,7 +66,6 @@ const L = {
     counter: 'Contre-argument',
     rebuttal: 'Réplique',
     unverified: '⚠ Non vérifié',
-    download: 'Télécharger (.html)',
     copy: 'Copier',
     retry: 'Relancer l’analyse',
     head: 'Tribunal',
@@ -96,7 +95,6 @@ const L = {
     counter: 'Counter-argument',
     rebuttal: 'Rebuttal',
     unverified: '⚠ Unverified',
-    download: 'Download (.html)',
     copy: 'Copy',
     retry: 'Run the analysis again',
     head: 'Court',
@@ -403,15 +401,6 @@ export function AnalysisStep({
     }
   };
 
-  const download = () => {
-    const html = document.getElementById('av-document')?.outerHTML ?? '';
-    const blob = new Blob([`<!doctype html><meta charset="utf-8"><title>Advocato</title>${html}`], { type: 'text/html' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `avocado-${caseFile.id}.html`;
-    a.click();
-  };
-
   return (
     <section className="av-panel av-doc" aria-busy={busy}>
       {busy && <Spinner label={l.working} />}
@@ -426,9 +415,6 @@ export function AnalysisStep({
         <p>
           <button type="button" className="av-primary" disabled={writing} onClick={() => void insert()}>
             {caseFile.lang === 'fr' ? 'Insérer dans le document' : 'Insert into the document'}
-          </button>{' '}
-          <button type="button" onClick={download}>
-            {l.download}
           </button>{' '}
           <button type="button" onClick={() => void navigator.clipboard.writeText(document.getElementById('av-document')?.innerText ?? '')}>
             {l.copy}

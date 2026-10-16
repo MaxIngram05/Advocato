@@ -42,6 +42,9 @@ export class RpcGateway implements ServerGateway {
   writeDocument(caseFile: CaseFile): Promise<{ caseFile: CaseFile; written: string[]; skipped: string[] }> {
     return this.invoke('writeDocument', caseFile);
   }
+  translateDocument(caseFile: CaseFile): Promise<{ from: 'fr' | 'en'; to: 'fr' | 'en'; paragraphs: number }> {
+    return this.invoke('translateDocument', caseFile);
+  }
   readSelection(): Promise<string> {
     return this.invoke('readSelection');
   }

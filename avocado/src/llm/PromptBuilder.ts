@@ -27,7 +27,7 @@ export interface BuiltPrompt {
 }
 
 /** Tasks that are not analysis: they run without a stance and never state a perspective. */
-export const NEUTRAL_TASKS = ['detectMissingInfo', 'suggestStance', 'transcribePdf'] as const;
+export const NEUTRAL_TASKS = ['detectMissingInfo', 'suggestStance', 'transcribePdf', 'translateDocument'] as const;
 
 const isNeutral = (task: LlmTask) => (NEUTRAL_TASKS as readonly LlmTask[]).includes(task);
 

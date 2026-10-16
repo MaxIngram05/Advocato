@@ -161,6 +161,18 @@
   },
   "settings": {
     "title": "Settings",
-    "newCase": "New case"
+    "newCase": "New case",
+    "translate": "Translate the document (FR ⇄ EN)"
+  },
+  "translate": {
+    "confirm": "I’ll translate the whole document into the other language (French ⇄ English), paragraph by paragraph. The current text will be replaced by its translation; you can go back with Undo (Ctrl+Z) or the version history. Names, citations and amounts stay as they are. Go ahead?",
+    "yes": "Yes, translate",
+    "no": "No, cancel",
+    "working": "Translating the document…",
+    "done": "Done: {count} paragraph(s) translated from {from} to {to}.",
+    "lang": {
+      "fr": "French",
+      "en": "English"
+    }
   }
 }

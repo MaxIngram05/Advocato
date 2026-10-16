@@ -64,6 +64,42 @@ export class GasDocumentWriter implements DocumentWriter {
     }
   }
 
+  async readTextBlocks(): Promise<string[]> {
+    return this.textElements().map((el) => el.getText());
+  }
+
+  async replaceTextBlocks(texts: string[]): Promise<void> {
+    const els = this.textElements();
+    if (els.length !== texts.length) throw new Error('The document changed during the translation; nothing was replaced.');
+    els.forEach((el, i) => {
+      const next = texts[i] ?? '';
+      if (next !== el.getText() && next.trim()) el.setText(next);
+    });
+  }
+
+  /** Paragraphs and list items of the body, including those inside table cells, in order. */
+  private textElements(): (GoogleAppsScript.Document.Paragraph | GoogleAppsScript.Document.ListItem)[] {
+    const T = DocumentApp.ElementType;
+    const out: (GoogleAppsScript.Document.Paragraph | GoogleAppsScript.Document.ListItem)[] = [];
+    const walk = (container: GoogleAppsScript.Document.ContainerElement | GoogleAppsScript.Document.Body) => {
+      for (let i = 0; i < container.getNumChildren(); i++) {
+        const child = container.getChild(i);
+        const type = child.getType();
+        if (type === T.PARAGRAPH) out.push(child.asParagraph());
+        else if (type === T.LIST_ITEM) out.push(child.asListItem());
+        else if (type === T.TABLE) {
+          const table = child.asTable();
+          for (let r = 0; r < table.getNumRows(); r++) {
+            const row = table.getRow(r);
+            for (let c = 0; c < row.getNumCells(); c++) walk(row.getCell(c));
+          }
+        }
+      }
+    };
+    walk(this.doc().getBody());
+    return out;
+  }
+
   async readSelection(): Promise<string> {
     return readSelectionText(this.doc().getSelection() as unknown as SelectionLike | null);
   }

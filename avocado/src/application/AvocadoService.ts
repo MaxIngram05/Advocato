@@ -15,6 +15,7 @@ import type {
 } from '../ports';
 import { AnalyseCase } from './AnalyseCase';
 import { Converse } from './Converse';
+import { TranslateDocument, type TranslateResult } from './TranslateDocument';
 import { WriteDocument } from './WriteDocument';
 import { ExtractFacts, type CaseUpdate } from './ExtractFacts';
 import { FinishIngestion } from './FinishIngestion';
@@ -112,6 +113,10 @@ export class AvocadoService {
     const out = await new WriteDocument(this.deps.writer).execute(caseFile, this.deps.clock.now().toISOString().slice(0, 10));
     await this.saveCase(out.caseFile);
     return out;
+  }
+
+  async translateDocument(caseFile: CaseFile): Promise<TranslateResult> {
+    return new TranslateDocument(this.generator, this.deps.writer).execute(caseFile);
   }
 
   async readSelection(): Promise<string> {

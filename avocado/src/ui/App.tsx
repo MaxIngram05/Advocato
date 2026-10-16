@@ -69,6 +69,7 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
   const [status, setStatus] = useState('');
   const [problems, setProblems] = useState<string[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [confirmTranslate, setConfirmTranslate] = useState(false);
   const dragDepth = useRef(0);
   const caseRef = useRef<CaseFile | null>(null);
   caseRef.current = caseFile;
@@ -199,6 +200,29 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
     void converse(confirmed, T('stance.confirmedEcho', { name: stance.clientName, role: roleLabel }));
   };
 
+  const say = (role: ChatMessage['role'], text: string) => update((c) => ({ ...c, messages: [...c.messages, message(role, text)] }));
+
+  const askTranslate = () => {
+    say('user', T('settings.translate'));
+    say('bot', T('translate.confirm'));
+    setConfirmTranslate(true);
+  };
+
+  const translate = async (yes: boolean) => {
+    setConfirmTranslate(false);
+    say('user', yes ? T('translate.yes') : T('translate.no'));
+    if (!yes) return;
+    setStatus(T('translate.working'));
+    try {
+      const out = await gateway.translateDocument(caseFile);
+      say('bot', T('translate.done', { count: out.paragraphs, from: T(`translate.lang.${out.from}`), to: T(`translate.lang.${out.to}`) }));
+    } catch (e) {
+      setProblems([describeError(T, e)]);
+    } finally {
+      setStatus('');
+    }
+  };
+
   const newCase = () => {
     const fresh = newCaseFile({ id: `case-${Date.now().toString(36)}`, docId: caseFile.docId, lang });
     update(() => applyEvent(fresh, { type: 'LANGUAGE_SET', lang }));
@@ -238,7 +262,7 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
             <img src={logo} alt="" width={30} height={30} />
             Advocato
           </span>
-          <SettingsMenu lang={lang} onLanguage={setLanguage} onUseSelection={() => void uploader.useSelection()} onNewCase={newCase} />
+          <SettingsMenu lang={lang} onLanguage={setLanguage} onUseSelection={() => void uploader.useSelection()} onNewCase={newCase} onTranslate={askTranslate} />
         </header>
         <main ref={threadRef} className="av-thread" role="log" aria-live="polite" aria-label={T('chat.label')}>
           <ul className="av-messages">
@@ -279,6 +303,17 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
               </button>
               <button type="button" onClick={() => confirmStance(false)}>
                 ✗ {T('stance.notRight')}
+              </button>
+            </div>
+          )}
+
+          {confirmTranslate && !status && (
+            <div className="av-chips" role="group" aria-label={T('settings.translate')}>
+              <button type="button" className="av-chip-strong" onClick={() => void translate(true)}>
+                ✓ {T('translate.yes')}
+              </button>
+              <button type="button" onClick={() => void translate(false)}>
+                ✗ {T('translate.no')}
               </button>
             </div>
           )}

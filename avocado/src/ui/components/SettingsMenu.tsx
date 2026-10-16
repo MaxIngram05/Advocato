@@ -8,11 +8,13 @@ export function SettingsMenu({
   onLanguage,
   onUseSelection,
   onNewCase,
+  onTranslate,
 }: {
   lang: Lang;
   onLanguage: (l: Lang) => void;
   onUseSelection: () => void;
   onNewCase: () => void;
+  onTranslate: () => void;
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -58,6 +60,16 @@ export function SettingsMenu({
             }}
           >
             {t('upload.useSelection')}
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              onTranslate();
+              setOpen(false);
+            }}
+          >
+            {t('settings.translate')}
           </button>
           <button
             type="button"

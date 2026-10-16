@@ -13,6 +13,7 @@ export const RPC_METHODS = [
   'analyseCase',
   'converse',
   'writeDocument',
+  'translateDocument',
 ] as const satisfies readonly (keyof AvocadoService)[];
 
 export type RpcMethod = (typeof RPC_METHODS)[number];

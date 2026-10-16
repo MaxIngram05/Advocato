@@ -161,6 +161,18 @@
   },
   "settings": {
     "title": "Paramètres",
-    "newCase": "Nouveau dossier"
+    "newCase": "Nouveau dossier",
+    "translate": "Traduire le document (FR ⇄ EN)"
+  },
+  "translate": {
+    "confirm": "Je vais traduire tout le document dans l’autre langue (français ⇄ anglais), paragraphe par paragraphe. Le texte actuel sera remplacé par sa traduction; vous pourrez revenir en arrière avec Annuler (Ctrl+Z) ou l’historique des versions. Les noms, références et montants restent tels quels. On y va?",
+    "yes": "Oui, traduire",
+    "no": "Non, annuler",
+    "working": "Traduction du document…",
+    "done": "C’est fait : {count} paragraphe(s) traduit(s) du {from} vers l’{to}.",
+    "lang": {
+      "fr": "français",
+      "en": "anglais"
+    }
   }
 }

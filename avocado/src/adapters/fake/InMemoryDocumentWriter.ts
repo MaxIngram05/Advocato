@@ -24,6 +24,25 @@ export class InMemoryDocumentWriter implements DocumentWriter {
     return { text: `${this.userText} ${sectionText}`, rangeNames: [...this.sections.keys()] };
   }
 
+  async readTextBlocks(): Promise<string[]> {
+    return [
+      ...(this.userText ? [this.userText] : []),
+      ...this.ordered().flatMap((s) => s.blocks.flatMap((b) => (b.kind === 'table' ? (b.rows ?? []).flat() : b.kind === 'list' ? (b.items ?? []) : [b.text ?? '']))),
+    ];
+  }
+
+  async replaceTextBlocks(texts: string[]): Promise<void> {
+    let i = 0;
+    if (this.userText) this.userText = texts[i++] ?? this.userText;
+    for (const s of this.ordered()) {
+      for (const b of s.blocks) {
+        if (b.kind === 'table') b.rows = (b.rows ?? []).map((row) => row.map((cell) => texts[i++] ?? cell));
+        else if (b.kind === 'list') b.items = (b.items ?? []).map((item) => texts[i++] ?? item);
+        else b.text = texts[i++] ?? b.text;
+      }
+    }
+  }
+
   async readSelection(): Promise<string> {
     return this.selection;
   }

@@ -22,7 +22,8 @@ export type LlmTask =
   | 'suggestNextPrompts'
   | 'transcribePdf'
   | 'buildAnalysis'
-  | 'converse';
+  | 'converse'
+  | 'translateDocument';
 
 export interface LlmRequest<T> {
   task: LlmTask;
@@ -104,6 +105,10 @@ export interface DocumentWriter {
   readSelection(): Promise<string>;
   /** The whole document text and its named ranges, read before any write (no overlap). */
   readDocument(): Promise<{ text: string; rangeNames: string[] }>;
+  /** Every paragraph, list item and table-cell paragraph, in document order. */
+  readTextBlocks(): Promise<string[]>;
+  /** Replaces the text of those blocks (same order and count), keeping their formatting role. */
+  replaceTextBlocks(texts: string[]): Promise<void>;
 }
 
 export interface CaseRepository {

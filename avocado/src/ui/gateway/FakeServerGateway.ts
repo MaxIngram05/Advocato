@@ -56,6 +56,10 @@ export class FakeServerGateway implements ServerGateway {
     return Promise.reject(new Error('FakeServerGateway: writeDocument is not scripted'));
   }
 
+  translateDocument(): Promise<{ from: 'fr' | 'en'; to: 'fr' | 'en'; paragraphs: number }> {
+    return Promise.reject(new Error('FakeServerGateway: translateDocument is not scripted'));
+  }
+
   converse(): Promise<CaseUpdate> {
     return notScripted('converse');
   }

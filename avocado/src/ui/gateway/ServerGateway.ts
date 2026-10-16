@@ -21,6 +21,8 @@ export interface ServerGateway {
   extractFacts(caseFile: CaseFile, exhibitId: string): Promise<CaseUpdate>;
   finishIngestion(caseFile: CaseFile): Promise<CaseUpdate>;
   readSelection(): Promise<string>;
+  /** Translates the open document FR ⇄ EN in place (the UI confirms first). */
+  translateDocument(caseFile: CaseFile): Promise<{ from: 'fr' | 'en'; to: 'fr' | 'en'; paragraphs: number }>;
   analyseCase(caseFile: CaseFile): Promise<CaseUpdate>;
   converse(caseFile: CaseFile, message: string): Promise<CaseUpdate>;
   /** Reads the whole document first; appends only new sections (no overwrite). */
