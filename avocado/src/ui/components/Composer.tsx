@@ -37,9 +37,6 @@ export function Composer({
         onFiles([...e.dataTransfer.files]);
       }}
     >
-      <button type="button" className="av-icon-btn" aria-label={t('upload.add')} title={t('upload.add')} onClick={() => fileRef.current?.click()}>
-        📎
-      </button>
       <input
         ref={fileRef}
         type="file"
@@ -66,6 +63,9 @@ export function Composer({
           if (e.key === 'Enter' && !e.shiftKey) submit(e);
         }}
       />
+      <button type="button" className="av-icon-btn" aria-label={t('upload.add')} title={t('upload.add')} onClick={() => fileRef.current?.click()}>
+        📎
+      </button>
       <button type="submit" className="av-send" disabled={disabled || !text.trim()} aria-label={t('chat.send')}>
         ↑
       </button>
