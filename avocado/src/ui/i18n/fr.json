@@ -10,7 +10,8 @@
     "label": "Conversation",
     "input": "Votre message",
     "send": "Envoyer",
-    "placeholder": "Écrivez ici…"
+    "placeholder": "Écrivez à Advocato…",
+    "thinking": "Advocato réfléchit…"
   },
   "step": {
     "label": "Étape",
@@ -82,7 +83,11 @@
     "invalid": "Indiquez le nom du client et, pour « Autre », décrivez le rôle.",
     "suggestionTitle": "Rôle suggéré",
     "suggestion": "Les documents suggèrent que {name} est {role}.",
-    "useSuggestion": "Utiliser cette suggestion"
+    "useSuggestion": "Utiliser cette suggestion",
+    "confirmTitle": "Confirmer le rôle du client",
+    "confirmChip": "Oui, je représente {name} ({role})",
+    "notRight": "Non, ce n’est pas le bon rôle",
+    "confirmedEcho": "Confirmé : je représente {name} ({role})."
   },
   "objective": {
     "annulment": "Annulation de la vente",
@@ -96,7 +101,7 @@
   "upload": {
     "title": "Documents",
     "prompt": "Ajoutez les pièces du dossier. Formats acceptés : PDF, DOCX, TXT, ou le texte sélectionné dans le document.",
-    "add": "Ajouter des documents (PDF, DOCX, TXT)",
+    "add": "Joindre des pièces (PDF, DOCX, TXT)",
     "useSelection": "Utiliser le texte sélectionné dans le document",
     "exhibits": "Pièces",
     "ocr": "transcrit par OCR",
@@ -113,7 +118,8 @@
     "analysing": "Extraction des faits de {id}…",
     "transcribing": "{name} ne contient pas de texte : transcription par OCR en cours…",
     "finishing": "Préparation de la liste des faits…",
-    "working": "Je lis les documents…"
+    "working": "Je lis les documents…",
+    "held": "Pièces reçues : je les numéroterai dès que le rôle de votre client sera confirmé."
   },
   "facts": {
     "title": "Faits",
@@ -138,10 +144,15 @@
       "favorable": "Favorable",
       "unfavorable": "Défavorable",
       "neutral": "Neutre"
-    }
+    },
+    "selectedEcho": "{count} faits retenus : {ids}"
   },
   "errors": {
     "generic": "Une erreur est survenue : {message}",
     "intakeIncomplete": "Renseignements manquants avant l’analyse : {fields}"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "newCase": "Nouveau dossier"
   }
 }

@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { detectLanguage } from '../core/language/LanguageDetector';
-import type { CaseFile, Lang, Stance, StanceSuggestion } from '../core/model';
+import { newCaseFile, type CaseFile, type ChatMessage, type Lang, type Stance } from '../core/model';
 import logo from './assets/advocato.png';
-import { ChatInput } from './components/ChatInput';
-import { LanguageToggle } from './components/LanguageToggle';
+import { Composer } from './components/Composer';
+import { SettingsMenu } from './components/SettingsMenu';
 import { Spinner } from './components/Spinner';
-import { StepIndicator } from './components/StepIndicator';
 import { AnalysisStep } from './containers/AnalysisStep';
 import { FactReviewStep } from './containers/FactReviewStep';
 import { UploadStep } from './containers/UploadStep';
-import { applyAnswer, nextQuestion, type Chip } from './conversation/intake';
+import { describeError } from './errors';
 import type { ExtractorRegistry } from './extraction/ExtractorRegistry';
 import type { ServerGateway } from './gateway/ServerGateway';
-import { useCaseFile, type Clock } from './hooks/useCaseFile';
+import { makeUploader } from './hooks/useFileUpload';
+import { applyEvent, useCaseFile, type Clock } from './hooks/useCaseFile';
 import { LangContext, t } from './i18n';
 import './theme.css';
 
@@ -21,6 +21,13 @@ export interface AppProps {
   clock: Clock;
   extractors: ExtractorRegistry;
   saveDelayMs?: number;
+}
+
+interface PendingStance {
+  role: Stance['role'];
+  clientName: string;
+  opposingParties: string[];
+  roleDescription?: string;
 }
 
 const LANG_KEY = 'advocato.lang';
@@ -36,45 +43,37 @@ const storeLang = (l: Lang) => {
   try {
     window.localStorage.setItem(LANG_KEY, l);
   } catch {
-    /* private mode: ask again next time */
+    /* private mode: the language is asked again next time */
   }
 };
 
-/** Bot line that opens each step of the conversation. */
+/** Status lines that depend on data (the conversation itself comes from the model). */
 function stepIntro(c: CaseFile, lang: Lang): string | null {
   const fr = lang === 'fr';
-  switch (c.session.step) {
-    case 'UPLOAD':
-      return fr
-        ? 'Parfait, le dossier est ouvert. Envoyez-moi les pièces (PDF, DOCX ou TXT) avec le trombone 📎, ou utilisez le texte sélectionné dans le document.'
-        : 'Great, the case is open. Send me the exhibits (PDF, DOCX or TXT) with the paperclip 📎, or use the text selected in the document.';
-    case 'FACT_REVIEW':
-      return fr
-        ? `J’ai extrait ${c.facts.length} faits des pièces, en ordre chronologique. Cochez ceux à relier pour bâtir l’argument principal.`
-        : `I extracted ${c.facts.length} facts from the exhibits, in chronological order. Tick the ones to tie together for the main argument.`;
-    case 'ANALYSING':
-      return fr
-        ? `Merci. Je cherche la jurisprudence et la législation pertinentes sur CAIJ, puis je rédige l’argumentation à partir des ${c.session.selectedFactIds.length} faits retenus.`
-        : `Thanks. I’m searching CAIJ for relevant case law and legislation, then drafting the argument from the ${c.session.selectedFactIds.length} selected facts.`;
-    default:
-      return null;
+  if (c.session.step === 'GREETING') return null;
+  if (c.session.step === 'INTAKE' && c.messages.length === 0) {
+    return fr
+      ? 'Parlez-moi du dossier : qui représentez-vous, contre qui, devant quel tribunal et ce que vous cherchez à obtenir. Vous pouvez aussi joindre les pièces avec 📎.'
+      : 'Tell me about the case: who you represent, against whom, before which court and what you want to obtain. You can also attach the exhibits with 📎.';
   }
+  if (c.session.step === 'FACT_REVIEW') {
+    return fr
+      ? `J’ai extrait ${c.facts.length} faits, en ordre chronologique. Cochez ceux qui doivent porter l’argument principal.`
+      : `I extracted ${c.facts.length} facts, in chronological order. Tick the ones the main argument should rest on.`;
+  }
+  return null;
 }
 
 export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps) {
-  const { caseFile, dispatch, say, update } = useCaseFile(gateway, clock, saveDelayMs);
-  const [suggestion, setSuggestion] = useState<StanceSuggestion | null>(null);
-  const [busy, setBusy] = useState('');
+  const { caseFile, dispatch, update } = useCaseFile(gateway, clock, saveDelayMs);
+  const [status, setStatus] = useState('');
+  const [problems, setProblems] = useState<string[]>([]);
+  const caseRef = useRef<CaseFile | null>(null);
+  caseRef.current = caseFile;
   const threadRef = useRef<HTMLElement>(null);
-  const messageCount = caseFile?.messages.length ?? 0;
-  useEffect(() => {
-    const el = threadRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messageCount, busy, caseFile?.session.step]);
-  const step = caseFile?.session.step;
   const lang: Lang = caseFile?.session.lang ?? storedLang() ?? 'fr';
   const T = (k: string, v?: Record<string, string | number>) => t(lang, k, v);
-  const question = caseFile && step === 'INTAKE' ? nextQuestion(caseFile, T) : null;
+  const step = caseFile?.session.step;
 
   // The language is asked once; later sessions reuse the remembered choice.
   useEffect(() => {
@@ -82,99 +81,101 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
     if (caseFile && step === 'GREETING' && remembered) dispatch({ type: 'LANGUAGE_SET', lang: remembered });
   }, [caseFile, step, dispatch]);
 
-  // Each new question or step is posted once as a bot message.
-  const prompt = question?.text ?? (caseFile ? stepIntro(caseFile, lang) : null);
+  const intro = caseFile ? stepIntro(caseFile, lang) : null;
   useEffect(() => {
-    if (!caseFile || !prompt) return;
-    const lastBot = [...caseFile.messages].reverse().find((m) => m.role === 'bot');
-    if (lastBot?.text !== prompt) say('bot', prompt);
-  }, [prompt, caseFile, say]);
-
-  // A stance suggestion is offered (never applied) once the lawyer has written something.
-  const userMessages = caseFile?.messages.filter((m) => m.role === 'user').length ?? 0;
-  useEffect(() => {
-    if (step !== 'INTAKE' || !caseFile || caseFile.stance || userMessages === 0) return;
-    let alive = true;
-    void gateway
-      .suggestStance(caseFile)
-      .then((s) => {
-        if (alive) setSuggestion(s);
-      })
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
+    if (!intro) return;
+    update((c) => {
+      const lastBot = [...c.messages].reverse().find((m) => m.role === 'bot');
+      if (lastBot?.text === intro) return c;
+      return { ...c, messages: [...c.messages, message('bot', intro)] };
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, gateway, userMessages > 0]);
+  }, [intro]);
+
+  const messageCount = caseFile?.messages.length ?? 0;
+  useEffect(() => {
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messageCount, status, step, problems.length]);
+
+  const uploader = useMemo(
+    () =>
+      makeUploader({
+        getCase: () => caseRef.current as CaseFile,
+        gateway,
+        extractors,
+        t: (k, v) => t(caseRef.current?.session.lang ?? 'fr', k, v),
+        onCaseFile: (c) => update(() => c),
+        onStatus: setStatus,
+        onProblems: setProblems,
+      }),
+    [gateway, extractors, update],
+  );
+
+  function message(role: ChatMessage['role'], text: string): ChatMessage {
+    return { id: `M-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, role, text, at: clock.now().toISOString() };
+  }
 
   if (!caseFile) return <div className="av-app" aria-busy="true" />;
   const session = caseFile.session;
+  const pending = !caseFile.stance ? (caseFile.pendingStance as PendingStance | undefined) : undefined;
+  const pendingDocs = (caseFile.pendingDocs as { name: string }[] | undefined) ?? [];
+
+  /** One chat turn: show the lawyer's message, then the model's reply. */
+  const converse = async (base: CaseFile, text: string) => {
+    const withMsg = { ...base, messages: [...base.messages, message('user', text)] };
+    update(() => withMsg);
+    setStatus(T('chat.thinking'));
+    try {
+      const out = await gateway.converse(withMsg, text);
+      update(() => out.caseFile);
+    } catch (e) {
+      setProblems([describeError(T, e)]);
+    } finally {
+      setStatus('');
+    }
+  };
 
   const setLanguage = (l: Lang) => {
     storeLang(l);
     dispatch({ type: 'LANGUAGE_SET', lang: l });
   };
 
-  const answer = (raw: string, chip?: Chip) => {
-    if (!question) return;
-    const result = applyAnswer(caseFile, question, raw, chip?.label);
-    say('user', result.echo || '—');
-    if (result.error || !result.caseFile) {
-      say('bot', result.error ?? '');
-      return;
-    }
-    // Keep messages added since the answer was computed (the user bubble).
-    const answered = result.caseFile;
-    const merge = (c: CaseFile): CaseFile => ({ ...answered, messages: c.messages });
-    if (result.confirmStance) {
-      const d = answered.intakeDraft ?? {};
-      const stance: Stance = {
-        role: d.role as Stance['role'],
-        ...(d.role === 'other' ? { roleDescription: d.roleDescription ?? '' } : {}),
-        clientName: d.clientName ?? '',
-        opposingParties: (d.opposing ?? '')
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean),
-        confirmedByUser: true,
-        confirmedAt: clock.now().toISOString(),
-        ...(suggestion && suggestion.clientName === d.clientName ? { suggestedFrom: suggestion.evidence } : {}),
-      };
-      dispatch({ type: 'STANCE_CONFIRMED', stance }, merge);
-      return;
-    }
-    if (result.complete) {
-      dispatch({ type: 'INTAKE_COMPLETE' }, merge);
-      return;
-    }
-    update(merge);
-  };
-
   const onSend = (text: string) => {
+    setProblems([]);
     if (session.step === 'GREETING') {
-      say('user', text);
-      const detected = detectLanguage(text);
-      if (detected) setLanguage(detected);
-      else say('bot', t(lang, 'askLanguage'));
+      const detected = detectLanguage(text) ?? 'fr';
+      storeLang(detected);
+      void converse(applyEvent(caseFile, { type: 'LANGUAGE_SET', lang: detected }), text);
       return;
     }
-    if (question) {
-      answer(text);
-      return;
-    }
-    say('user', text);
-    say(
-      'bot',
-      lang === 'fr'
-        ? 'Utilisez les options ci-dessus pour continuer. La conversation libre arrive après la rédaction.'
-        : 'Use the options above to continue. Free chat becomes available after drafting.',
-    );
+    void converse(caseFile, text);
   };
 
-  const useSuggestion = () => {
-    if (!suggestion) return;
-    say('user', `${suggestion.clientName} — ${t(lang, `stance.${suggestion.role}`)}`);
-    update((c) => ({ ...c, intakeDraft: { role: suggestion.role, clientName: suggestion.clientName } }));
+  const confirmStance = (yes: boolean) => {
+    if (!pending) return;
+    const roleLabel = pending.role === 'other' ? (pending.roleDescription ?? '') : T(`stance.${pending.role}`).toLowerCase();
+    if (!yes) {
+      void converse({ ...caseFile, pendingStance: undefined }, T('stance.notRight'));
+      return;
+    }
+    const stance: Stance = {
+      role: pending.role,
+      ...(pending.role === 'other' ? { roleDescription: pending.roleDescription || T('stance.other') } : {}),
+      clientName: pending.clientName,
+      opposingParties: pending.opposingParties,
+      confirmedByUser: true,
+      confirmedAt: clock.now().toISOString(),
+    };
+    const draftObjective = caseFile.intakeDraft?.objective;
+    const confirmed = applyEvent({ ...caseFile, pendingStance: undefined, ...(draftObjective && !caseFile.objective ? { objective: draftObjective } : {}) }, { type: 'STANCE_CONFIRMED', stance });
+    void converse(confirmed, T('stance.confirmedEcho', { name: stance.clientName, role: roleLabel }));
+  };
+
+  const newCase = () => {
+    const fresh = newCaseFile({ id: `case-${Date.now().toString(36)}`, docId: caseFile.docId, lang });
+    update(() => applyEvent(fresh, { type: 'LANGUAGE_SET', lang }));
+    setProblems([]);
   };
 
   return (
@@ -185,18 +186,15 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
             <img src={logo} alt="" width={30} height={30} />
             Advocato
           </span>
-          <LanguageToggle lang={session.lang} onChange={setLanguage} />
+          <SettingsMenu lang={lang} onLanguage={setLanguage} onUseSelection={() => void uploader.useSelection()} onNewCase={newCase} />
         </header>
-        {session.step !== 'GREETING' && <StepIndicator step={session.step} round={session.round} />}
-        <main ref={threadRef} className="av-thread" role="log" aria-live="polite" aria-label={t(lang, 'chat.label')}>
-          <ul>
+        <main ref={threadRef} className="av-thread" role="log" aria-live="polite" aria-label={T('chat.label')}>
+          <ul className="av-messages">
             <li className="av-msg" data-message data-role="bot">
               <img className="av-avatar" src={logo} alt="" />
               <div className="av-bubble">
-                <p>{t(lang, 'greeting')}</p>
-                {session.step === 'GREETING' && (
-                  <p>Dans quelle langue souhaitez-vous travailler? / Which language would you like to work in?</p>
-                )}
+                <p>{T('greeting')}</p>
+                {session.step === 'GREETING' && <p>Dans quelle langue souhaitez-vous travailler? / Which language would you like to work in?</p>}
               </div>
             </li>
             {caseFile.messages.map((m) => (
@@ -212,7 +210,7 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
           </ul>
 
           {session.step === 'GREETING' && (
-            <div className="av-chips" role="group" aria-label={t(lang, 'language.label')}>
+            <div className="av-chips" role="group" aria-label={T('language.label')}>
               <button type="button" onClick={() => setLanguage('fr')}>
                 Français
               </button>
@@ -222,40 +220,40 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
             </div>
           )}
 
-          {question && question.chips.length + (question.key === 'role' && suggestion ? 1 : 0) > 0 && (
-            <div className="av-chips" role="group" aria-label={question.text}>
-              {question.key === 'role' && suggestion && (
-                <button
-                  type="button"
-                  className="av-chip-suggest"
-                  onClick={useSuggestion}
-                  title={suggestion.evidence.map((e) => `${e.exhibitId} ${e.locator}: ${e.excerpt}`).join('\n')}
-                >
-                  💡 {suggestion.clientName} — {t(lang, `stance.${suggestion.role}`)}
-                </button>
-              )}
-              {question.chips.map((c) => (
-                <button key={c.value || c.label} type="button" onClick={() => answer(c.value, c)}>
-                  {c.label}
-                </button>
-              ))}
+          {pending && !status && (
+            <div className="av-chips" role="group" aria-label={T('stance.confirmTitle')}>
+              <button type="button" className="av-chip-strong" onClick={() => confirmStance(true)}>
+                ✓ {T('stance.confirmChip', { name: pending.clientName, role: pending.role === 'other' ? (pending.roleDescription ?? '') : T(`stance.${pending.role}`).toLowerCase() })}
+              </button>
+              <button type="button" onClick={() => confirmStance(false)}>
+                ✗ {T('stance.notRight')}
+              </button>
             </div>
           )}
 
-          {session.step === 'UPLOAD' && (
-            <div className="av-card">
-              <UploadStep caseFile={caseFile} gateway={gateway} extractors={extractors} onBusy={setBusy} onCaseFile={(c) => update(() => c)} />
+          {pendingDocs.length > 0 && (
+            <div className="av-card av-card-muted">
+              <p className="av-card-note">{T('upload.held')}</p>
+              <ul className="av-exhibits">
+                {pendingDocs.map((d, i) => (
+                  <li key={`${d.name}-${i}`}>📄 {d.name}</li>
+                ))}
+              </ul>
             </div>
           )}
+
+          {session.step === 'UPLOAD' && <UploadStep caseFile={caseFile} gateway={gateway} onBusy={setStatus} onCaseFile={(c) => update(() => c)} />}
           {session.step === 'FACT_REVIEW' && (
             <div className="av-card">
               <FactReviewStep
                 key={session.round}
                 caseFile={caseFile}
-                onSelect={(factIds) => {
-                  say('user', lang === 'fr' ? `${factIds.length} faits retenus : ${factIds.join(', ')}` : `${factIds.length} facts selected: ${factIds.join(', ')}`);
-                  dispatch({ type: 'FACTS_SELECTED', factIds });
-                }}
+                onSelect={(factIds) =>
+                  dispatch({ type: 'FACTS_SELECTED', factIds }, (c) => ({
+                    ...c,
+                    messages: [...c.messages, message('user', T('facts.selectedEcho', { count: factIds.length, ids: factIds.join(', ') }))],
+                  }))
+                }
               />
             </div>
           )}
@@ -264,9 +262,15 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
               <AnalysisStep caseFile={caseFile} gateway={gateway} onCaseFile={(c) => update(() => c)} />
             </div>
           )}
-          {busy && <Spinner label={busy} />}
+
+          {problems.map((p) => (
+            <p key={p} role="alert" className="av-alert" data-severity="warning">
+              ⚠ {p}
+            </p>
+          ))}
+          {status && <Spinner label={status} />}
         </main>
-        <ChatInput onSend={onSend} placeholder={question?.freeText ? question.text : t(lang, 'chat.placeholder')} />
+        <Composer onSend={onSend} onFiles={(f) => void uploader.uploadFiles(f)} disabled={!!status} />
       </div>
     </LangContext.Provider>
   );

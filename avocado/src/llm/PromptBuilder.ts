@@ -65,7 +65,8 @@ export class PromptBuilder {
       langName: LANG_NAME[lang],
     };
     let system: string;
-    if (isNeutral(req.task)) {
+    // The chat turn runs before the stance exists; until then it gets the neutral charter (G10).
+    if (isNeutral(req.task) || (req.task === 'converse' && !caseFile.stance)) {
       system = `${fill(NEUTRAL_CHARTER[lang], context)}\n\n${PROMPT_TEMPLATES[req.task].instructions[lang]}`;
     } else {
       const stance = caseFile.stance;

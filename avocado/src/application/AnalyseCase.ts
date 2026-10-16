@@ -96,9 +96,8 @@ export class AnalyseCase {
     const selected = new FactPool(caseFile.facts, caseFile.session).selected();
     const alerts: Alert[] = [];
     const topic = selected.map((f) => f.text).join(' ').slice(0, 600);
-    const queries = [
-      `${caseFile.causesOfAction.includes('COA_LATENT_DEFECT') || caseFile.causesOfAction.length === 0 ? 'garantie de qualité vice caché vente' : caseFile.causesOfAction.join(' ')} ${caseFile.areaOfLaw}: ${topic}`.slice(0, 900),
-    ];
+    const issue = caseFile.legalIssue ?? (caseFile.lang === 'fr' ? 'Question juridique' : 'Legal issue');
+    const queries = [`${issue}. ${topic}`.slice(0, 900)];
     let hits: JurisprudenceHit[] = [];
     try {
       const results = await Promise.all(queries.map((text) => this.search.search({ text, lang: caseFile.lang, limit: 10 })));

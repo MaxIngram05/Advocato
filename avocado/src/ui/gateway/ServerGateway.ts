@@ -22,4 +22,5 @@ export interface ServerGateway {
   finishIngestion(caseFile: CaseFile): Promise<CaseUpdate>;
   readSelection(): Promise<string>;
   analyseCase(caseFile: CaseFile): Promise<CaseUpdate>;
+  converse(caseFile: CaseFile, message: string): Promise<CaseUpdate>;
 }

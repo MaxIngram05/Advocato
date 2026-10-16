@@ -21,7 +21,8 @@ export type LlmTask =
   | 'findWeaknesses'
   | 'suggestNextPrompts'
   | 'transcribePdf'
-  | 'buildAnalysis';
+  | 'buildAnalysis'
+  | 'converse';
 
 export interface LlmRequest<T> {
   task: LlmTask;

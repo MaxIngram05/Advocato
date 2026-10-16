@@ -16,10 +16,10 @@ export function FactChecklist({ facts, selected, onToggle }: FactChecklistProps)
   const id = useId();
   return (
     <fieldset role="group" aria-labelledby={`${id}-legend`}>
-      <legend id={`${id}-legend`}>{t('facts.legend')}</legend>
+      <legend id={`${id}-legend`} className="av-visually-hidden">{t('facts.legend')}</legend>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         {facts.map((f) => (
-          <li key={f.id} className="av-msg" data-favorability={f.favorability}>
+          <li key={f.id} className="av-fact" data-favorability={f.favorability}>
             <input
               id={`${id}-${f.id}`}
               type="checkbox"

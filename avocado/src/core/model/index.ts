@@ -72,6 +72,12 @@ export const CaseFileSchema = z.object({
   llmCalls: z.array(LlmCallLogSchema),
   /** Conversational intake answers not yet confirmed (role, names…). Never a stance (G10). */
   intakeDraft: z.record(z.string(), z.string()).optional(),
+  /** A role the conversation points to, awaiting the lawyer's confirmation (G10). */
+  pendingStance: z.any().optional(),
+  /** Documents received before the stance was confirmed; ingested right after. */
+  pendingDocs: z.any().optional(),
+  /** The legal issue as stated in the conversation (drives the CAIJ search). */
+  legalIssue: z.string().optional(),
   /** MVP: the full grounded analysis (see application/AnalyseCase). */
   analysis: z.any().optional(),
   session: SessionStateSchema,

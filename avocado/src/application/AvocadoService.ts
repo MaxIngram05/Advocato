@@ -12,6 +12,7 @@ import type {
   LlmClient,
 } from '../ports';
 import { AnalyseCase } from './AnalyseCase';
+import { Converse } from './Converse';
 import { ExtractFacts, type CaseUpdate } from './ExtractFacts';
 import { FinishIngestion } from './FinishIngestion';
 import { IngestDocuments } from './IngestDocuments';
@@ -58,7 +59,22 @@ export class AvocadoService {
   }
 
   async ingestDocuments(caseFile: CaseFile, docs: ExtractedDocument[]): Promise<CaseUpdate> {
+    // Before the stance is confirmed, exhibits cannot be numbered yet: hold them.
+    if (!caseFile.stance) {
+      const pending = [...((caseFile.pendingDocs as ExtractedDocument[] | undefined) ?? []), ...docs];
+      return this.persist({ caseFile: { ...caseFile, pendingDocs: pending }, alerts: [] });
+    }
     return this.persist(await new IngestDocuments(this.deps.exhibits, this.deps.ids).execute(caseFile, docs));
+  }
+
+  async converse(caseFile: CaseFile, message: string): Promise<CaseUpdate> {
+    let update = await new Converse(this.generator, this.deps.ids, () => this.deps.clock.now()).execute(caseFile, message);
+    const pending = (update.caseFile.pendingDocs as ExtractedDocument[] | undefined) ?? [];
+    if (update.caseFile.stance && pending.length > 0) {
+      const ingested = await new IngestDocuments(this.deps.exhibits, this.deps.ids).execute({ ...update.caseFile, pendingDocs: [] }, pending);
+      update = { caseFile: ingested.caseFile, alerts: [...update.alerts, ...ingested.alerts] };
+    }
+    return this.persist(update);
   }
 
   async transcribePdf(caseFile: CaseFile, pdf: { name: string; base64: string }): Promise<CaseUpdate> {

@@ -68,7 +68,7 @@ describe('US-04 fact extraction (UI)', () => {
     });
     await user.click(await screen.findByRole('button', { name: 'Analyse the exhibits' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Augure unavailable');
-    expect(screen.getByRole('heading', { name: 'Documents' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Analyse the exhibits' })).toBeInTheDocument();
   });
 
   it('lists facts in timeline order with status, position and favorability labels (G3)', async () => {

@@ -11,6 +11,7 @@ export const RPC_METHODS = [
   'finishIngestion',
   'readSelection',
   'analyseCase',
+  'converse',
 ] as const satisfies readonly (keyof AvocadoService)[];
 
 export type RpcMethod = (typeof RPC_METHODS)[number];

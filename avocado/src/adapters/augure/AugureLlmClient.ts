@@ -33,6 +33,7 @@ export const REASONING_EFFORT: Record<LlmTask, Effort> = {
   analyseUnfavorableEvidence: 'high',
   findWeaknesses: 'high',
   buildAnalysis: 'medium',
+  converse: 'low',
 };
 
 interface AugureCompletion {

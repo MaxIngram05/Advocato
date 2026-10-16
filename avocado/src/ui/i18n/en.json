@@ -10,7 +10,8 @@
     "label": "Conversation",
     "input": "Your message",
     "send": "Send",
-    "placeholder": "Type here…"
+    "placeholder": "Message Advocato…",
+    "thinking": "Advocato is thinking…"
   },
   "step": {
     "label": "Step",
@@ -82,7 +83,11 @@
     "invalid": "Enter the client's name and, for \"Other\", describe the role.",
     "suggestionTitle": "Suggested role",
     "suggestion": "The documents suggest that {name} is the {role}.",
-    "useSuggestion": "Use this suggestion"
+    "useSuggestion": "Use this suggestion",
+    "confirmTitle": "Confirm the client’s role",
+    "confirmChip": "Yes, I act for {name} ({role})",
+    "notRight": "No, that’s not the right role",
+    "confirmedEcho": "Confirmed: I act for {name} ({role})."
   },
   "objective": {
     "annulment": "Annulment of the sale",
@@ -96,7 +101,7 @@
   "upload": {
     "title": "Documents",
     "prompt": "Add the case exhibits. Accepted formats: PDF, DOCX, TXT, or the text selected in the document.",
-    "add": "Add documents (PDF, DOCX, TXT)",
+    "add": "Attach exhibits (PDF, DOCX, TXT)",
     "useSelection": "Use the selected text in the document",
     "exhibits": "Exhibits",
     "ocr": "transcribed by OCR",
@@ -113,7 +118,8 @@
     "analysing": "Extracting facts from {id}…",
     "transcribing": "{name} has no text layer: transcribing it with OCR…",
     "finishing": "Preparing the fact list…",
-    "working": "Reading the documents…"
+    "working": "Reading the documents…",
+    "held": "Exhibits received: I’ll number them as soon as your client’s role is confirmed."
   },
   "facts": {
     "title": "Facts",
@@ -138,10 +144,15 @@
       "favorable": "Favorable",
       "unfavorable": "Unfavorable",
       "neutral": "Neutral"
-    }
+    },
+    "selectedEcho": "{count} facts selected: {ids}"
   },
   "errors": {
     "generic": "Something went wrong: {message}",
     "intakeIncomplete": "Information missing before analysis: {fields}"
+  },
+  "settings": {
+    "title": "Settings",
+    "newCase": "New case"
   }
 }
