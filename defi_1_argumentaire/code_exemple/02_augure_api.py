@@ -14,11 +14,12 @@ en changeant seulement `base_url` et la clé.
 import argparse
 import os
 import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 client = OpenAI(
     api_key=os.environ["AUGURE_API_KEY"],
