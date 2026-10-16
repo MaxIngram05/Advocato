@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Advocato",
+  "description": "Argumentaire juridique sourcé (CAIJ + Augure) dans un panneau latéral, à côté de votre document.",
+  "version": "0.1.0",
+  "icons": { "16": "icon-16.png", "48": "icon-48.png", "128": "icon-128.png" },
+  "action": { "default_title": "Ouvrir Advocato", "default_icon": { "16": "icon-16.png", "48": "icon-48.png" } },
+  "side_panel": { "default_path": "panel.html" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["sidePanel"]
+}

@@ -35,15 +35,15 @@ export function UploadDropzone({ exhibits, problems, busy, onFiles, onUseSelecti
         onFiles([...e.dataTransfer.files]);
       }}
     >
-      <h2 id={`${id}-title`}>{t('upload.title')}</h2>
-      <p>{t('upload.prompt')}</p>
+      <h2 id={`${id}-title`} className="av-visually-hidden">{t('upload.title')}</h2>
       <div className="av-field">
-        <label htmlFor={`${id}-files`}>{t('upload.add')}</label>
+        <label htmlFor={`${id}-files`} className="av-attach">📎 {t('upload.add')}</label>
         <input
           id={`${id}-files`}
           type="file"
           multiple
           accept={ACCEPTED_UPLOADS}
+          className="av-file"
           disabled={busy}
           onChange={(e) => {
             onFiles([...(e.target.files ?? [])]);

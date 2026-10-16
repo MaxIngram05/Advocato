@@ -1,5 +1,5 @@
 {
-  "appName": "Avocado",
+  "appName": "Advocato",
   "greeting": "Bonjour, hi",
   "greetingPrompt": "I help you build a sourced argumentation matrix. Write to me to get started.",
   "askLanguage": "Français ou English ? Choisissez une langue / Pick a language.",
@@ -112,7 +112,8 @@
     "analyse": "Analyse the exhibits",
     "analysing": "Extracting facts from {id}…",
     "transcribing": "{name} has no text layer: transcribing it with OCR…",
-    "finishing": "Preparing the fact list…"
+    "finishing": "Preparing the fact list…",
+    "working": "Reading the documents…"
   },
   "facts": {
     "title": "Facts",

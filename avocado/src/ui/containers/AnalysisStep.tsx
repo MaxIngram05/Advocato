@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CaseFile, Citation } from '../../core/model';
+import { Spinner } from '../components/Spinner';
 import { describeError } from '../errors';
 import type { ServerGateway } from '../gateway/ServerGateway';
 import { useT } from '../i18n';
@@ -391,7 +392,7 @@ export function AnalysisStep({
 
   return (
     <section className="av-panel av-doc" aria-busy={busy}>
-      {busy && <p aria-live="polite">{l.working}</p>}
+      {busy && <Spinner label={l.working} />}
       {error && (
         <p role="alert" className="av-alert" data-severity="critical">
           ⚠ {error}

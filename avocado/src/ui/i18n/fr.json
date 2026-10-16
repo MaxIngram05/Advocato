@@ -1,5 +1,5 @@
 {
-  "appName": "Avocado",
+  "appName": "Advocato",
   "greeting": "Bonjour, hi",
   "greetingPrompt": "Je vous aide à bâtir une matrice d’argumentation sourcée. Écrivez-moi pour commencer.",
   "askLanguage": "Français ou English ? Choisissez une langue / Pick a language.",
@@ -112,7 +112,8 @@
     "analyse": "Analyser les pièces",
     "analysing": "Extraction des faits de {id}…",
     "transcribing": "{name} ne contient pas de texte : transcription par OCR en cours…",
-    "finishing": "Préparation de la liste des faits…"
+    "finishing": "Préparation de la liste des faits…",
+    "working": "Je lis les documents…"
   },
   "facts": {
     "title": "Faits",

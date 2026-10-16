@@ -32,17 +32,24 @@ export interface UploadStepProps {
   gateway: ServerGateway;
   extractors: ExtractorRegistry;
   onCaseFile: (c: CaseFile) => void;
+  /** Progress line shown with the loading wheel (empty = idle). */
+  onBusy?: (status: string) => void;
 }
 
 /** US-03/US-04 container: extracts text in the sidebar, then the server numbers exhibits and extracts facts. */
-export function UploadStep({ caseFile, gateway, extractors, onCaseFile }: UploadStepProps) {
+export function UploadStep({ caseFile, gateway, extractors, onCaseFile, onBusy }: UploadStepProps) {
   const t = useT();
   const [busy, setBusy] = useState(false);
-  const [status, setStatus] = useState('');
+  const [status, setStatusState] = useState('');
+  const setStatus = (s: string) => {
+    setStatusState(s);
+    onBusy?.(s);
+  };
   const [problems, setProblems] = useState<string[]>([]);
 
   const run = async (work: (issues: string[]) => Promise<void>) => {
     setBusy(true);
+    setStatus(t('upload.working'));
     const issues: string[] = [];
     try {
       await work(issues);
@@ -120,7 +127,7 @@ export function UploadStep({ caseFile, gateway, extractors, onCaseFile }: Upload
         onUseSelection={() => void onUseSelection()}
       />
       <div className="av-panel">
-        <p aria-live="polite">{status}</p>
+        {status && <p className="av-visually-hidden">{status}</p>}
         <button type="button" disabled={busy || caseFile.exhibits.length === 0} onClick={() => void onAnalyse()}>
           {t('upload.analyse')}
         </button>

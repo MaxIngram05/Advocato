@@ -14,7 +14,7 @@ export function onInstall(): void {
 }
 
 export function showSidebar(): void {
-  const html = HtmlService.createHtmlOutputFromFile('Sidebar').setTitle('Avocado');
+  const html = HtmlService.createHtmlOutputFromFile('Sidebar').setTitle('Advocato');
   DocumentApp.getUi().showSidebar(html);
 }
 

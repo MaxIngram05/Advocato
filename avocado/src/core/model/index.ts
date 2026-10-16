@@ -70,6 +70,8 @@ export const CaseFileSchema = z.object({
   messages: z.array(ChatMessageSchema),
   snapshots: z.array(CaseSnapshotSchema),
   llmCalls: z.array(LlmCallLogSchema),
+  /** Conversational intake answers not yet confirmed (role, names…). Never a stance (G10). */
+  intakeDraft: z.record(z.string(), z.string()).optional(),
   /** MVP: the full grounded analysis (see application/AnalyseCase). */
   analysis: z.any().optional(),
   session: SessionStateSchema,

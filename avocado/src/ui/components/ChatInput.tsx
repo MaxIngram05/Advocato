@@ -1,7 +1,15 @@
 import { useId, useState, type FormEvent } from 'react';
 import { useT } from '../i18n';
 
-export function ChatInput({ onSend, disabled = false }: { onSend: (text: string) => void; disabled?: boolean }) {
+export function ChatInput({
+  onSend,
+  disabled = false,
+  placeholder,
+}: {
+  onSend: (text: string) => void;
+  disabled?: boolean;
+  placeholder?: string;
+}) {
   const t = useT();
   const id = useId();
   const [text, setText] = useState('');
@@ -20,15 +28,15 @@ export function ChatInput({ onSend, disabled = false }: { onSend: (text: string)
       <textarea
         id={id}
         value={text}
-        placeholder={t('chat.placeholder')}
+        placeholder={placeholder ?? t('chat.placeholder')}
         disabled={disabled}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) submit(e);
         }}
       />
-      <button type="submit" disabled={disabled}>
-        {t('chat.send')}
+      <button type="submit" disabled={disabled} aria-label={t('chat.send')} className="av-send">
+        ➤
       </button>
     </form>
   );
