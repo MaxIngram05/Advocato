@@ -1,0 +1,53 @@
+import type { Lang } from './model';
+
+/** Display labels for the enumerations that appear in the draft. */
+const LABELS = {
+  fr: {
+    provided: 'fourni',
+    proven: 'prouvé',
+    hypothesis: 'hypothèse',
+    missing: 'manquant',
+    admitted: 'admis',
+    contested: 'contesté',
+    unknown: 'position inconnue',
+    established: 'établi',
+    arguable: 'défendable',
+    weak: 'faible',
+    stated: 'soulevé',
+    anticipated: 'anticipé',
+    low: 'faible',
+    medium: 'moyen',
+    high: 'élevé',
+    claimant: 'demandeur',
+    defendant: 'défendeur',
+    other: 'autre',
+    favorable: 'favorable',
+    unfavorable: 'défavorable',
+    neutral: 'neutre',
+  },
+  en: {
+    provided: 'provided',
+    proven: 'proven',
+    hypothesis: 'hypothesis',
+    missing: 'missing',
+    admitted: 'admitted',
+    contested: 'contested',
+    unknown: 'position unknown',
+    established: 'established',
+    arguable: 'arguable',
+    weak: 'weak',
+    stated: 'stated',
+    anticipated: 'anticipated',
+    low: 'low',
+    medium: 'medium',
+    high: 'high',
+    claimant: 'claimant',
+    defendant: 'defendant',
+    other: 'other',
+    favorable: 'favorable',
+    unfavorable: 'unfavorable',
+    neutral: 'neutral',
+  },
+} as const;
+
+export const label = (lang: Lang, value: string): string => (LABELS[lang] as Record<string, string>)[value] ?? value;

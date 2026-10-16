@@ -47,10 +47,14 @@ const MISSING_LABEL: Record<string, string> = {
   parties: 'the parties and their roles',
 };
 
-/** Accepts YYYY-MM-DD or YYYY-MM (first day of the month). */
+/** Accepts YYYY-MM-DD, YYYY-MM, MM-YYYY, MM/YYYY or "MM YYYY" (month only: first day). */
 const toIso = (s: string): string | null => {
-  const m = s.trim().match(/^(\d{4})-(\d{2})(?:-(\d{2}))?$/);
-  return m ? `${m[1]}-${m[2]}-${m[3] ?? '01'}` : null;
+  const v = s.trim();
+  const ymd = v.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?$/);
+  if (ymd) return `${ymd[1]}-${ymd[2]?.padStart(2, '0')}-${(ymd[3] ?? '1').padStart(2, '0')}`;
+  const my = v.match(/^(\d{1,2})[-/ .](\d{4})$/);
+  if (my) return `${my[2]}-${my[1]?.padStart(2, '0')}-01`;
+  return null;
 };
 const isIso = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(new Date(`${s}T00:00:00Z`).getTime());
 
@@ -85,6 +89,22 @@ export function applyExtraction(c: CaseFile, x: ConverseOutput['extracted']): Ca
   return next;
 }
 
+/** Confirm the side first, then the essentials. */
+const ASK_ORDER = ['stance', 'court', 'objective', 'dateOfFacts', 'areaOfLaw', 'parties'];
+
+/** Parties follow from the confirmed stance when the conversation did not name their roles. */
+export function withDerivedParties(c: CaseFile): CaseFile {
+  if (!c.stance || c.parties.length > 0) return c;
+  const fr = c.lang === 'fr';
+  const role = c.stance.role;
+  const own = role === 'claimant' ? (fr ? 'demandeur' : 'claimant') : role === 'defendant' ? (fr ? 'défendeur' : 'defendant') : (c.stance.roleDescription ?? '');
+  const other = role === 'claimant' ? (fr ? 'défendeur' : 'defendant') : role === 'defendant' ? (fr ? 'demandeur' : 'claimant') : fr ? 'partie adverse' : 'opposing party';
+  return {
+    ...c,
+    parties: [{ name: c.stance.clientName, role: own }, ...c.stance.opposingParties.map((name) => ({ name, role: other }))],
+  };
+}
+
 export function missingIntake(c: CaseFile): string[] {
   return checkIntake(
     {
@@ -96,7 +116,7 @@ export function missingIntake(c: CaseFile): string[] {
       parties: c.parties,
     },
     { stage: 'intake' },
-  ).missing;
+  ).missing.sort((a, b) => ASK_ORDER.indexOf(a) - ASK_ORDER.indexOf(b));
 }
 
 /**
@@ -110,7 +130,8 @@ export class Converse {
     private readonly now: () => Date,
   ) {}
 
-  async execute(caseFile: CaseFile, message: string): Promise<CaseUpdate> {
+  async execute(input: CaseFile, message: string): Promise<CaseUpdate> {
+    const caseFile = withDerivedParties(input);
     const analysis = caseFile.analysis as { causeOfAction?: string; remedy?: { principal?: { remedy?: string } } } | undefined;
     const sources: AllowedSource[] = caseFile.citations.map((c) => ({ id: c.id, title: c.title, pinpoints: [c.pinpoint], excerpt: '' }));
     const payload = {
@@ -148,7 +169,7 @@ export class Converse {
       facts: [],
       payload,
     });
-    let next = applyExtraction(caseFile, result.value.extracted);
+    let next = withDerivedParties(applyExtraction(caseFile, result.value.extracted));
     const alerts: Alert[] = [...result.alerts];
     if (next.stance && next.session.step === 'INTAKE' && missingIntake(next).length === 0) {
       const session = sessionReducer(next.session, { type: 'INTAKE_COMPLETE' });

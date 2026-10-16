@@ -1,3 +1,4 @@
+import { label } from '../core/labels';
 import type { CaseFile, Citation } from '../core/model';
 import type { RenderedBlock, RenderedSection } from '../ports';
 import type { Analysis } from './AnalyseCase';
@@ -90,7 +91,7 @@ export function composeDocument(c: CaseFile, a: Analysis, today: string): Render
   const list = (items: string[]): RenderedBlock => ({ kind: 'list', items });
   const factById = new Map(c.facts.map((f) => [f.id, f]));
   const selected = c.session.selectedFactIds.map((id) => factById.get(id)).filter((f) => !!f);
-  const role = c.stance?.role === 'other' ? (c.stance.roleDescription ?? '') : (c.stance?.role ?? '');
+  const role = c.stance?.role === 'other' ? (c.stance.roleDescription ?? '') : label(c.lang, c.stance?.role ?? '');
 
   const sections: [string, RenderedBlock[]][] = [
     [
@@ -105,7 +106,7 @@ export function composeDocument(c: CaseFile, a: Analysis, today: string): Render
       's1',
       [
         h(l.s1),
-        list(selected.map((f) => `${f.id} — ${f.text} (${f.status}, ${f.position}) ${f.sourceRefs.map((s) => `${s.exhibitId} ${s.locator}`).join(', ')}`)),
+        list(selected.map((f) => `${f.id} — ${f.text} (${label(c.lang, f.status)}, ${label(c.lang, f.position)}) ${f.sourceRefs.map((s) => `${s.exhibitId} ${s.locator}`).join(', ')}`)),
         list(a.legalQuestions),
       ],
     ],
@@ -120,7 +121,7 @@ export function composeDocument(c: CaseFile, a: Analysis, today: string): Render
           rows: [
             [...l.cols],
             ...a.matrix.map((r) => [
-              `${r.element} (${r.confidence})`,
+              `${r.element} (${label(c.lang, r.confidence)})`,
               r.factIds.join(', ') || '⚠',
               r.evidence || '⚠',
               `${r.analysis}${r.gap ? ` ⚠ ${r.gap}` : ''}`,
@@ -145,7 +146,7 @@ export function composeDocument(c: CaseFile, a: Analysis, today: string): Render
     ],
     [
       's7',
-      [h(l.s7), list(a.unfavorable.map((u) => `${u.item}${ids(u.factIds)} — ${l.impact} : ${u.impact} ${l.response} : ${u.response} ${l.risk} : ${u.residualRisk}`))],
+      [h(l.s7), list(a.unfavorable.map((u) => `${u.item}${ids(u.factIds)} — ${l.impact} : ${u.impact} ${l.response} : ${u.response} ${l.risk} : ${label(c.lang, u.residualRisk)}`))],
     ],
     [
       's8',
@@ -156,7 +157,7 @@ export function composeDocument(c: CaseFile, a: Analysis, today: string): Render
           p(`${g.text}${ids(g.factIds)}${refs(g.citationIds)}`),
           list(
             g.counterArguments.flatMap((ca) => [
-              `${l.counter} (${ca.origin}) : ${ca.text}`,
+              `${l.counter} (${label(c.lang, ca.origin)}) : ${ca.text}`,
               ...ca.rebuttals.map((r) => `    ${l.rebuttal} : ${r.text}${ids(r.factIds)}${refs(r.citationIds)}`),
             ]),
           ),

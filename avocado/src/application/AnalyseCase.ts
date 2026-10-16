@@ -1,3 +1,4 @@
+import { tr } from '../core/i18n';
 import { z } from 'zod';
 import { FactPool } from '../core/facts/FactPool';
 import type { Alert, CaseFile, Citation } from '../core/model';
@@ -103,7 +104,7 @@ export class AnalyseCase {
       const results = await Promise.all(queries.map((text) => this.search.search({ text, lang: caseFile.lang, limit: 10 })));
       hits = results.flat();
     } catch (e) {
-      alerts.push({ id: this.ids.next('AL'), severity: 'critical', message: `CAIJ unavailable — no case law retrieved (${e instanceof Error ? e.message : String(e)}).` });
+      alerts.push({ id: this.ids.next('AL'), severity: 'critical', message: tr(caseFile.lang, `CAIJ indisponible — aucune jurisprudence récupérée (${e instanceof Error ? e.message : String(e)}).`, `CAIJ unavailable — no case law retrieved (${e instanceof Error ? e.message : String(e)}).`) });
     }
     const top = [
       ...hits.filter((h) => h.kind === 'legislation').slice(0, 8),

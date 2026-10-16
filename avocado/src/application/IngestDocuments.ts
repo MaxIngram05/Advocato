@@ -1,3 +1,4 @@
+import { tr } from '../core/i18n';
 import { exhibitPrefix, nextExhibitIds } from '../core/exhibits/exhibitNumbering';
 import { fingerprint } from '../core/exhibits/fingerprint';
 import type { Alert, CaseFile, Exhibit } from '../core/model';
@@ -30,7 +31,7 @@ export class IngestDocuments {
           alerts.push({
             id: this.ids.next('AL'),
             severity: 'warning',
-            message: `"${d.name}" is identical to ${dup}; it was not added again.`,
+            message: tr(caseFile.lang, `« ${d.name} » est identique à ${dup}; il n’a pas été ajouté de nouveau.`, `"${d.name}" is identical to ${dup}; it was not added again.`),
           });
           return false;
         }
@@ -40,7 +41,7 @@ export class IngestDocuments {
       alerts.push({
         id: this.ids.next('AL'),
         severity: 'warning',
-        message: `No text could be extracted from "${d.name}". Please provide another format (text PDF, DOCX or TXT).`,
+        message: tr(caseFile.lang, `Aucun texte n’a pu être extrait de « ${d.name} ». Merci de fournir un autre format (PDF texte, DOCX ou TXT).`, `No text could be extracted from "${d.name}". Please provide another format (text PDF, DOCX or TXT).`),
       });
       return false;
     });
@@ -62,7 +63,7 @@ export class IngestDocuments {
         alerts.push({
           id: this.ids.next('AL'),
           severity: 'info',
-          message: `${id} was transcribed by OCR; please spot-check it against the original.`,
+          message: tr(caseFile.lang, `${id} a été transcrit par OCR; vérifiez-le par sondage contre l’original.`, `${id} was transcribed by OCR; please spot-check it against the original.`),
           target: { kind: 'element', id },
         });
       }

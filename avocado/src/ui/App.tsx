@@ -149,7 +149,23 @@ export function App({ gateway, clock, extractors, saveDelayMs = 1000 }: AppProps
 
   const setLanguage = (l: Lang) => {
     storeLang(l);
-    dispatch({ type: 'LANGUAGE_SET', lang: l });
+    const switching = session.step !== 'GREETING' && l !== caseFile.lang;
+    dispatch({ type: 'LANGUAGE_SET', lang: l }, (c) =>
+      switching
+        ? {
+            ...c,
+            messages: [
+              ...c.messages,
+              message(
+                'bot',
+                l === 'fr'
+                  ? 'D’accord, je continue en français. Les éléments déjà rédigés restent dans leur langue d’origine; relancez l’analyse pour obtenir l’ébauche en français.'
+                  : 'Sure, I’ll continue in English. Content already written stays in its original language; run the analysis again to get the draft in English.',
+              ),
+            ],
+          }
+        : c,
+    );
   };
 
   const onSend = (text: string) => {

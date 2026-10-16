@@ -1,3 +1,4 @@
+import { tr } from '../core/i18n';
 import { applyFactRules, verifySourceRefs } from '../core/facts/factRules';
 import type { Alert, CaseFile, Fact } from '../core/model';
 import { estimateTokens } from '../llm/ContextPacker';
@@ -51,7 +52,7 @@ export class ExtractFacts {
         alerts.push({
           id: this.ids.next('AL'),
           severity: 'warning',
-          message: `${id}: the excerpt "${ref.excerpt}" was not found in ${ref.exhibitId}; the reference was removed.`,
+          message: tr(caseFile.lang, `${id} : l’extrait « ${ref.excerpt} » est introuvable dans ${ref.exhibitId}; la référence a été retirée.`, `${id}: the excerpt "${ref.excerpt}" was not found in ${ref.exhibitId}; the reference was removed.`),
           target: { kind: 'fact', id },
         });
       }
@@ -69,7 +70,11 @@ export class ExtractFacts {
         alerts.push({
           id: this.ids.next('AL'),
           severity: 'warning',
-          message: `${id} is ${fact.status === 'missing' ? 'missing (needed but not in the exhibits)' : 'a hypothesis (not backed by an exhibit)'}: ${fact.text}`,
+          message: tr(
+            caseFile.lang,
+            `${id} est ${fact.status === 'missing' ? 'manquant (nécessaire mais absent des pièces)' : 'une hypothèse (non appuyée par une pièce)'} : ${fact.text}`,
+            `${id} is ${fact.status === 'missing' ? 'missing (needed but not in the exhibits)' : 'a hypothesis (not backed by an exhibit)'}: ${fact.text}`,
+          ),
           target: { kind: 'fact', id },
         });
       }

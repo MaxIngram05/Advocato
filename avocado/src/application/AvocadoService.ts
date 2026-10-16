@@ -1,3 +1,4 @@
+import { tr } from '../core/i18n';
 import { fingerprint } from '../core/exhibits/fingerprint';
 import { newCaseFile, type Alert, type CaseFile, type StanceSuggestion } from '../core/model';
 import { GroundedGenerator } from '../llm/GroundedGenerator';
@@ -69,7 +70,7 @@ export class AvocadoService {
       const fresh = docs.filter((d) => {
         const fp = fingerprint(d.segments);
         if (known.has(fp)) {
-          alerts.push({ id: this.deps.ids.next('AL'), severity: 'warning', message: `"${d.name}" was already received; it was not added again.` });
+          alerts.push({ id: this.deps.ids.next('AL'), severity: 'warning', message: tr(caseFile.lang, `« ${d.name} » a déjà été reçu; il n’a pas été ajouté de nouveau.`, `"${d.name}" was already received; it was not added again.`) });
           return false;
         }
         known.add(fp);

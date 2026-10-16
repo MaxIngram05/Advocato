@@ -1,3 +1,4 @@
+import { tr } from '../core/i18n';
 import type { ZodType } from 'zod';
 import type { Alert, CaseFile, Fact, LlmCallLog } from '../core/model';
 import type { Clock, IdGenerator, LlmClient, LlmTask } from '../ports';
@@ -72,12 +73,12 @@ export class GroundedGenerator {
           ...(req.file ? { file: req.file } : {}),
         });
       } catch (e) {
-        this.log(req.task, calls, alerts);
+        this.log(req.task, calls, alerts, req.caseFile.lang);
         if (!(e instanceof LlmSchemaError)) throw e;
         errors = e.issues;
         continue;
       }
-      this.log(req.task, calls, alerts);
+      this.log(req.task, calls, alerts, req.caseFile.lang);
       const issues = validateGrounding(value, ctx);
       if (issues.length === 0) return { value, alerts, downgraded: [], calls };
       if (attempt === 1) {
@@ -85,7 +86,7 @@ export class GroundedGenerator {
         alerts.push({
           id: this.ids.next('AL'),
           severity: 'warning',
-          message: `Unverified references were removed from the ${req.task} answer: ${removed.map((r) => r.id).join(', ')}.`,
+          message: tr(req.caseFile.lang, `Des références non vérifiées ont été retirées de la réponse : ${removed.map((r) => r.id).join(', ')}.`, `Unverified references were removed from the answer: ${removed.map((r) => r.id).join(', ')}.`),
         });
         return { value: validateStructured(downgraded, req.schema), alerts, downgraded: removed, calls };
       }
@@ -94,7 +95,7 @@ export class GroundedGenerator {
     throw new LlmOutputInvalidError(req.task, errors);
   }
 
-  private log(task: LlmTask, calls: LlmCallLog[], alerts: Alert[]) {
+  private log(task: LlmTask, calls: LlmCallLog[], alerts: Alert[], lang: 'fr' | 'en') {
     const meta = this.llm.lastCall?.();
     if (!meta) return;
     calls.push({ task, at: this.clock.now().toISOString(), ...meta });
@@ -102,7 +103,11 @@ export class GroundedGenerator {
       alerts.push({
         id: this.ids.next('AL'),
         severity: 'info',
-        message: `The ${task} request was served by fallback capacity (region: ${meta.inferenceRegion ?? 'unknown'}${meta.fallbackReason ? `, reason: ${meta.fallbackReason}` : ''}).`,
+        message: tr(
+          lang,
+          `La requête a été traitée par une capacité de relève (région : ${meta.inferenceRegion ?? 'inconnue'}${meta.fallbackReason ? `, motif : ${meta.fallbackReason}` : ''}).`,
+          `The request was served by fallback capacity (region: ${meta.inferenceRegion ?? 'unknown'}${meta.fallbackReason ? `, reason: ${meta.fallbackReason}` : ''}).`,
+        ),
       });
     }
   }

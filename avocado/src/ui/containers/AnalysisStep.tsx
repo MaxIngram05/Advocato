@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { label } from '../../core/labels';
 import type { CaseFile, Citation } from '../../core/model';
 import { Spinner } from '../components/Spinner';
 import { describeError } from '../errors';
@@ -142,14 +143,14 @@ function AnalysisDocument({ caseFile, a }: { caseFile: CaseFile; a: Analysis }) 
         ⚠ {l.banner}
       </p>
       <p>
-        <strong>{l.head}:</strong> {caseFile.court} · {caseFile.areaOfLaw} · {stance?.clientName} ({stance?.role}) ·{' '}
+        <strong>{l.head}:</strong> {caseFile.court} · {caseFile.areaOfLaw} · {stance?.clientName} ({label(caseFile.lang, stance?.role ?? '')}) ·{' '}
         {caseFile.dateOfFacts} · {new Date().toISOString().slice(0, 10)}
       </p>
       <h3>{l.s1}</h3>
       <ul>
         {selected.map((f) => (
           <li key={f.id}>
-            {f.id} — {f.text} <em>({f.status}, {f.position})</em> {f.sourceRefs.map((s) => `${s.exhibitId} ${s.locator}`).join(', ')}
+            {f.id} — {f.text} <em>({label(caseFile.lang, f.status)}, {label(caseFile.lang, f.position)})</em> {f.sourceRefs.map((s) => `${s.exhibitId} ${s.locator}`).join(', ')}
           </li>
         ))}
       </ul>
@@ -183,7 +184,7 @@ function AnalysisDocument({ caseFile, a }: { caseFile: CaseFile; a: Analysis }) 
             {a.matrix.map((r, i) => (
               <tr key={i}>
                 <td>
-                  {r.element} <em>({r.confidence})</em>
+                  {r.element} <em>({label(caseFile.lang, r.confidence)})</em>
                 </td>
                 <td>{facts(r.factIds) || '⚠'}</td>
                 <td>{r.evidence || '⚠'}</td>
@@ -249,7 +250,7 @@ function AnalysisDocument({ caseFile, a }: { caseFile: CaseFile; a: Analysis }) 
         {a.unfavorable.map((u, i) => (
           <li key={i}>
             <strong>{u.item}</strong> {u.factIds.length ? `(${facts(u.factIds)})` : ''} — {l.impact}: {u.impact} {l.response}:{' '}
-            {u.response} {l.risk}: {u.residualRisk}
+            {u.response} {l.risk}: {label(caseFile.lang, u.residualRisk)}
           </li>
         ))}
       </ul>
@@ -264,7 +265,7 @@ function AnalysisDocument({ caseFile, a }: { caseFile: CaseFile; a: Analysis }) 
           <ul>
             {g.counterArguments.map((c, j) => (
               <li key={j}>
-                <strong>{l.counter}</strong> ({c.origin}): {c.text}
+                <strong>{l.counter}</strong> ({label(caseFile.lang, c.origin)}): {c.text}
                 <ul>
                   {c.rebuttals.map((r, k) => (
                     <li key={k}>
